@@ -10,14 +10,21 @@ export default async function handler(req, res) {
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
-  const { description, skills, education, experience, jobDescription } = req.body;
+  const {name,lastName,email,phone,linkedin,portfolio, description, skills, education, experience, projects, jobDescription } = req.body;
 
-  const prompt = `Genera un CV profesional basado en la siguiente información:
+  const prompt = `Genera un CV profesional basado en la siguiente información y promediame que tan compatible soy con el puesto en una escala del 1% al 100% en el final del cv:
+  Nombre: ${name}
+  Apellido: ${lastName}
+  Email: ${email}
+  Teléfono: ${phone}
+  Linkedin Link: ${linkedin}
+  Portfolio Link: ${portfolio}
   Descripción: ${description}
   Habilidades: ${skills}
   Estudios: ${education}
   Experiencia: ${experience}
-  Descripción del trabajo: ${jobDescription}`;
+  Proyectos: ${projects}
+  Descripción del trabajo en el cual voy a aplicar: ${jobDescription}`;
 
   try {
     const resGoogle = await generateText({

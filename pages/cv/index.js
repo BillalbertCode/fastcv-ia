@@ -2,10 +2,17 @@ import { useState } from 'react';
 import { jsPDF } from 'jspdf';
 
 export default function Home() {
+  const [name, setName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [phone, setPhone] = useState('')
+  const [email, setEmail] = useState('')
+  const [linkedin, setLinkedin] = useState('')
+  const [portfolio, setPortfolio] = useState('')
   const [description, setDescription] = useState('');
   const [skills, setSkills] = useState('');
   const [education, setEducation] = useState('');
   const [experience, setExperience] = useState('');
+  const [projects, setProjects] = useState('')
   const [jobDescription, setJobDescription] = useState('');
   const [cv, setCv] = useState('');
 
@@ -18,6 +25,13 @@ export default function Home() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
+        name,
+        lastName,
+        phone,
+        email,
+        linkedin,
+        portfolio,
+        projects,
         description,
         skills,
         education,
@@ -45,6 +59,30 @@ export default function Home() {
       <h1>Generador de CV</h1>
       <form onSubmit={handleSubmit}>
         <div>
+          <label>Nombre</label>
+          <input value={name} onChange={(e) => setName(e.target.value)} type='text' />
+        </div>
+        <div>
+          <label>Apellido</label>
+          <input value={lastName} onChange={(e) => setLastName(e.target.value)} type='text' />
+        </div>
+        <div>
+          <label>Numero de telefono</label>
+          <input value={phone} onChange={(e) => setPhone(e.target.value)} type='number'/>
+        </div>
+        <div>
+          <label>Correo electronico</label>
+          <input value={email} onChange={(e) => setEmail(e.target.value)} type='email'/>
+        </div>
+        <div>
+          <label>Linkedin Link</label>
+          <input value={linkedin} onChange={(e) => setLinkedin(e.target.value)} type='text'/>
+        </div>
+        <div>
+          <label>Portfolio Link</label>
+          <input value={portfolio} onChange={(e) => setPortfolio(e.target.value)} type='text' />
+        </div>
+        <div>
           <label>Descripción:</label>
           <textarea value={description} onChange={(e) => setDescription(e.target.value)} />
         </div>
@@ -59,6 +97,10 @@ export default function Home() {
         <div>
           <label>Experiencia:</label>
           <textarea value={experience} onChange={(e) => setExperience(e.target.value)} />
+        </div>
+        <div>
+          <label>Proyectos:</label>
+          <textarea value={projects} onChange={(e) => setProjects(e.target.value)} />
         </div>
         <div>
           <label>Descripción del Trabajo:</label>
