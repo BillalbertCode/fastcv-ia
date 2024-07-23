@@ -42,7 +42,7 @@ export default async function handler(req, res) {
   })
 
   const prompt = `
-    Segun la informacion de una persona me vas a colocar en un objeto
+    Segun la informacion de esta persona, modifica de manera veridica la informacion de la persona para que se adapte a la descripcion del empleo
     - Auto Descripción de la persona: ${description}
     - Habilidades segun la persona: ${skills}
     - Estudios segun la persona: ${education}
@@ -53,7 +53,7 @@ export default async function handler(req, res) {
   try {
     const googleResponse = await generateObject({
       model: google('models/gemini-1.5-pro-latest'),
-      prompt: `genera unos datos falsos de una persona, este es la descripcion del empleo ${jobDescription}`,
+      prompt,
       schema,
       system: "Eres un sistema automatico que va a mejorar las descripciones que te dan segun una descripcion de trabajo",
       mode: "json"
