@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { jsPDF } from 'jspdf';
 
 export default function Home() {
-  
+
   const [name, setName] = useState('')
   const [lastName, setLastName] = useState('')
   const [phone, setPhone] = useState('')
@@ -59,6 +59,7 @@ export default function Home() {
 
     const data = await response.json();
     if (response.ok) {
+      console.log(data)
       setCv(data.cv);
     } else {
       console.error(data.error);

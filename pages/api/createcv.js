@@ -42,7 +42,7 @@ export default async function handler(req, res) {
   })
 
   const prompt = `
-    Genera un cv profesional en base a esta informacion y adaptalo a la descripcion del trabajo, Todos los datos que vas a colocar son los datos de los que ya alla escrito la persona, puedes modificar las descripcion de la experiencia laboral y la descripcion personal 
+    Segun la informacion de una persona me vas a colocar en un objeto
     - Auto Descripción de la persona: ${description}
     - Habilidades segun la persona: ${skills}
     - Estudios segun la persona: ${education}
@@ -51,13 +51,16 @@ export default async function handler(req, res) {
     - Descripción del trabajo: ${jobDescription}
   `;
   try {
-    const googleResponse = await generateText({
-      model: google('models/gemini-pro'),
-      prompt,
+    const googleResponse = await generateObject({
+      model: google('models/gemini-1.5-pro-latest'),
+      prompt: `genera unos datos falsos de una persona, este es la descripcion del empleo ${jobDescription}`,
+      schema,
+      system: "Eres un sistema automatico que va a mejorar las descripciones que te dan segun una descripcion de trabajo",
+      mode: "json"
     });
 
     console.log(googleResponse)
-    res.status(200).json({ cv: googleResponse.text });
+    res.status(200).json( googleResponse);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
