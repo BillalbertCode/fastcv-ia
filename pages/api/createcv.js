@@ -38,29 +38,31 @@ export default async function handler(req, res) {
       link: z.string(),
       description: z.string()
     })),
-    compatibilityWithWork: z.number()
+    compatibilityWithWork: z.number(),
+    feedbackMessage: z.string()
   })
 
   const prompt = `
     Segun la informacion de esta persona, modifica de manera veridica la informacion de la persona para que se adapte a la descripcion del empleo
-    - Auto Descripción de la persona: ${description}
-    - Habilidades segun la persona: ${skills}
+    - Auto Descripción de la persona, maximo 300 caracteres: ${description}
+    - Habilidades segun la persona, maximo 6 habilidades contando soft-Skill y Hard-skils mas apropiadas para el empleo: ${skills}
     - Estudios segun la persona: ${education}
-    - Experiencia segun la persona: ${experience}
-    - Proyectos segun la persona: ${projects}
-    - Descripción del trabajo: ${jobDescription}
+    - Experiencia segun la persona, descripcion de maximo 350 caracteres por empleo: ${experience}
+    - Proyectos segun la persona, descripcion de maximo 350 caracteres por proyecto : ${projects}
+    - Descripción del trabajo ${jobDescription}
+    Dale una puntuacion de compatibilidad con el empleo del 1 al 100 con total sinceridad y un mensaje de feedback segun que deberia aprender o mejorar para el puesto y que le faltaria
   `;
   try {
     const googleResponse = await generateObject({
       model: google('models/gemini-1.5-pro-latest'),
       prompt,
       schema,
-      system: "Eres un sistema automatico que va a mejorar las descripciones que te dan segun una descripcion de trabajo",
+      system: "Eres un sistema automatico que va a mejorar las descripciones y datos que te dan de un usuario segun una descripcion de trabajo al cual aplicara",
       mode: "json"
     });
 
     console.log(googleResponse)
-    res.status(200).json( googleResponse);
+    res.status(200).json( {cv: googleResponse.object});
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

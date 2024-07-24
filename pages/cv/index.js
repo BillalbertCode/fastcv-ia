@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { jsPDF } from 'jspdf';
 
 export default function Home() {
-
+  // Datos Usuario Ingresado en el formulario
   const [name, setName] = useState('')
   const [lastName, setLastName] = useState('')
   const [phone, setPhone] = useState('')
@@ -14,28 +14,58 @@ export default function Home() {
   const [education, setEducation] = useState('');
   const [experience, setExperience] = useState('');
   const [projects, setProjects] = useState('')
+  // Datos del Trabajo
   const [jobDescription, setJobDescription] = useState('');
+  // Datos del CV generado
   const [cv, setCv] = useState('');
 
+  useEffect(() => {
+    const userInfo = localStorage.getItem("user")
+    if (userInfo) {
+      try {
+        const parsedUserInfo = JSON.parse(userInfo)
+        setName(parsedUserInfo.name)
+        setLastName(parsedUserInfo.lastName)
+        setPhone(parsedUserInfo.phone)
+        setEmail(parsedUserInfo.email)
+        setLinkedin(parsedUserInfo.linkedin)
+        setPortfolio(parsedUserInfo.portfolio)
+        setDescription(parsedUserInfo.description)
+        setSkills(parsedUserInfo.skills)
+        setEducation(parsedUserInfo.education)
+        setExperience(parsedUserInfo.experience)
+        setProjects(parsedUserInfo.projects)
+      }
+      catch (error) {
+        console.error("Error parsing user info from localStorage:", error);
+      }
+    }
+  }, []);
 
+  // Guardar informacion del usuario
+  const saveInfoUser = () => {
+    const userInfo = {
+      name,
+      lastName,
+      phone,
+      email,
+      linkedin,
+      portfolio,
+      description,
+      skills,
+      education,
+      experience,
+      projects
+    }
+
+    localStorage.setItem("user", JSON.stringify(userInfo))
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    saveInfoUser()
 
-    const userInfo = {
-      name: name,
-      lastName: lastName,
-      phone: phone,
-      email: email,
-      linkedin: linkedin,
-      portfolio: portfolio,
-      description: description,
-      skills: skills,
-      education: education,
-      experience: experience,
-      projects: projects
-    }
-    localStorage.setItem("user", JSON.stringify(userInfo))
+    // Peticion de los datos generados por IA
     const response = await fetch('/api/createcv', {
       method: 'POST',
       headers: {
@@ -59,13 +89,14 @@ export default function Home() {
 
     const data = await response.json();
     if (response.ok) {
-      console.log(data)
-      setCv(data.cv);
+      console.log(data.cv)
+      setCv(data.cv.feedbackMessage);
     } else {
       console.error(data.error);
     }
   };
 
+  // crear y descargar pdf
   const handleDownload = () => {
     const doc = new jsPDF();
     doc.text(cv, 10, 10);
@@ -131,7 +162,8 @@ export default function Home() {
       {cv && (
         <div className='container'>
           <h2>CV Generado:</h2>
-          <pre>{cv}</pre>
+          <div className='container text-danger'>{cv}</div>
+          {/* <pre>{cv}</pre> */}
           <button className='btn btn-success' onClick={handleDownload}>Descargar como PDF</button>
         </div>
       )}
