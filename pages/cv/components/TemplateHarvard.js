@@ -11,9 +11,9 @@ const TemplateHarvard = ({ user }) => {
         <>
             <div ref={cvRef} className="container-fluid p-5 bg-white text-dark">
                 <div className="d-flex flex-column align-items-center">
-                    <h1 className="h5">{`${user.personalInfo.name} ${user.personalInfo.lastName} `}</h1>
+                    <h1 className="h3">{`${user.personalInfo.name} ${user.personalInfo.lastName} `}</h1>
                     <div>
-                        {`${user.personalInfo.email} | ${user.personalInfo.phone} |`} <a href={user.personalInfo.linkedin}>linkedin</a>
+                        {`${user.personalInfo.email} | ${user.personalInfo.phone} |`} <a href="https://example.com">linkedin</a>
                     </div>
                 </div>
                 <div className="mt-4">
@@ -51,7 +51,7 @@ const TemplateHarvard = ({ user }) => {
                     })}
                 </div>
                 <div className="mt-4">
-                    <p className="text-center">Habilidades Tecnicas</p>
+                    <p className="text-center">Habilidades Técnicas</p>
                     {user.technicalSkills.map((skill, index) => {
                         return (
                             <SchemeSkills key={index} technicalSkills={skill} />
@@ -100,7 +100,7 @@ const SchemeEducation = ({ education }) => {
     return (
         <div className="my-3">
             <div className="d-flex justify-content-between">
-                <h3 className="h6">{name}</h3>
+                <h3 className="h6"><strong>{name}</strong></h3>
                 <p>{location}</p>
             </div>
             <div className="d-flex justify-content-between">
@@ -152,7 +152,7 @@ const SchemeExperience = ({ experience }) => {
     return (
         <div className="my-3">
             <div className="d-flex justify-content-between">
-                <h3 className="h6">{organization}</h3>
+                <h3 className="h6"><strong>{organization}</strong></h3>
                 <p>{location}</p>
             </div>
             <div className="d-flex justify-content-between">
@@ -185,10 +185,12 @@ const SchemeProjects = ({ project }) => {
 
     return (
         <div className="my-3">
-            <h3 className="h6">
-                {name + ' '}
-                {link &&
-                    <a href={link} target="_blank" rel="noreferrer">Link</a>}
+            <h3 className="h6" >
+                <strong>
+                    {name + ' '}
+                    {link &&
+                        <a href={link} target="_blank" rel="noreferrer">Link</a>}
+                </strong>
             </h3>
             <p>{description}</p>
         </div>
@@ -222,16 +224,16 @@ const SchemeLidership = ({ leadership }) => {
     return (
         <div className="my-3" >
             <div className="d-flex justify-content-between">
-                <h3 className="h6">{organization}</h3>
+                <h3 className="h6"><strong>{organization}</strong></h3>
                 <p>{location}</p>
             </div>
             <div className="d-flex justify-content-between">
                 <p className="fw-medium" >{role}</p>
                 <p>{startDate} - {endDate}</p>
             </div>
-            <p>{achievements.map((data) => {
-                return <p>{data}</p>
-            })}</p>
+            {achievements.map((data, index) => {
+                return <p key={index} >{data}</p>
+            })}
         </div>
     )
 }
@@ -255,7 +257,7 @@ const SchemeSkills = ({ technicalSkills }) => {
 
     return (
         <div className="my-2">
-            <p><span className="fw-semibold">{category}: </span>{skills.map((skill, index) => {
+            <p><strong>{category}: </strong>{skills.map((skill, index) => {
                 return (skills.length >= 2 && skills.length == index + 1) ? <span key={index}>{skill}</span> : <span key={index}>{skill}, </span>
             })}</p>
         </div>
