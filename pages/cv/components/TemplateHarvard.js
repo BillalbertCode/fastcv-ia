@@ -4,86 +4,57 @@ import createPDF from "../utils/createPDF";
 // Analizar si necesita un tipo distinto de distribucion segun el tipo de carrera
 
 const TemplateHarvard = ({ user }) => {
-
     // Hacemos referencia al elemento para luego poder descargarlo
-    const cvRef = useRef(null)
+    const cvRef = useRef(null);
+
     return (
         <>
-            <div ref={cvRef} className="container-fluid p-5 bg-white text-dark">
-                <div className="d-flex flex-column align-items-center">
-                    <h1 className="h3">{`${user.personalInfo.name} ${user.personalInfo.lastName} `}</h1>
+            <div ref={cvRef} className="container mx-auto p-5 bg-white text-black">
+                <div className="flex flex-col items-center">
+                    <h1 className="text-2xl">{`${user.personalInfo.name} ${user.personalInfo.lastName} `}</h1>
                     <div>
-                        {`${user.personalInfo.email} | ${user.personalInfo.phone} |`} <a href="https://example.com">linkedin</a>
+                        {`${user.personalInfo.email} | ${user.personalInfo.phone} |`} <a href="https://example.com" className="text-blue-500">linkedin</a>
                     </div>
                 </div>
                 <div className="mt-4">
-                    <p className="text-center"><u>Educación</u></p>
-                    {user.education.map((edu, index) => {
-                        return (
-                            <SchemeEducation key={index} education={edu} />
-                        )
-                    })
-                    }
-
+                    <p className="text-center underline">Educación</p>
+                    {user.education.map((edu, index) => (
+                        <SchemeEducation key={index} education={edu} />
+                    ))}
                 </div>
                 <div className="mt-4">
-                    <p className="text-center"><u>Experiencia</u></p>
-                    {user.experience.map((exp, index) => {
-                        return (
-                            <SchemeExperience key={index} experience={exp} />
-                        )
-                    })}
+                    <p className="text-center underline">Experiencia</p>
+                    {user.experience.map((exp, index) => (
+                        <SchemeExperience key={index} experience={exp} />
+                    ))}
                 </div>
                 <div className="mt-4">
-                    <p className="text-center"><u>Proyectos</u></p>
-                    {user.projects.map((project, index) => {
-                        return (
-                            <SchemeProjects key={index} project={project} />
-                        )
-                    })}
+                    <p className="text-center underline">Proyectos</p>
+                    {user.projects.map((project, index) => (
+                        <SchemeProjects key={index} project={project} />
+                    ))}
                 </div>
                 <div className="mt-4">
-                    <p className="text-center"><u>Liderzgo y Actividades</u></p>
-                    {user.leadershipAndActivities.map((leadership, index) => {
-                        return (
-                            <SchemeLidership key={index} leadership={leadership} />
-                        )
-                    })}
+                    <p className="text-center underline">Liderazgo y Actividades</p>
+                    {user.leadershipAndActivities.map((leadership, index) => (
+                        <SchemeLidership key={index} leadership={leadership} />
+                    ))}
                 </div>
                 <div className="mt-4">
                     <p className="text-center">Habilidades Técnicas</p>
-                    {user.technicalSkills.map((skill, index) => {
-                        return (
-                            <SchemeSkills key={index} technicalSkills={skill} />
-                        )
-                    })}
+                    {user.technicalSkills.map((skill, index) => (
+                        <SchemeSkills key={index} technicalSkills={skill} />
+                    ))}
                 </div>
             </div>
-            <button className="btn btn-outline-success" onClick={() => createPDF(cvRef)}>Generar PDF</button>
+            <button className="btn bg-green-500 text-white py-2 px-4 rounded mt-4" onClick={() => createPDF(cvRef)}>Generar PDF</button>
         </>
-
-    )
+    );
 }
 
-export default TemplateHarvard
+export default TemplateHarvard;
 
-// esquema de educacion
-// datos que espera: 
-// name: nombre de la institucion
-// location: lugar del titulo
-// degree: titulo obtenido
-// concentracion: area de estudio
-// gpa: notas recividas (opcional)
-// graduationDate: Fecha de graduacion, mes y año
-// thesis: nombre de la thesis que realisaste (opcional)
-// relevantEvents: Eventos relevantes, como honores, premios y reconocimientos (opcional)
-// courseWorks: Cursos hechos en la universidad (opcional)
-
-/**
- * 
- * @param {object} education - recibe un objeto, con los datos de la educacion
- * @returns 
- */
+// Esquema de educación
 const SchemeEducation = ({ education }) => {
     const {
         name,
@@ -95,15 +66,15 @@ const SchemeEducation = ({ education }) => {
         thesis,
         relevantEvents,
         courseWorks
-    } = education
+    } = education;
 
     return (
         <div className="my-3">
-            <div className="d-flex justify-content-between">
-                <h3 className="h6"><strong>{name}</strong></h3>
+            <div className="flex justify-between">
+                <h3 className="text-lg font-bold">{name}</h3>
                 <p>{location}</p>
             </div>
-            <div className="d-flex justify-content-between">
+            <div className="flex justify-between">
                 <p>
                     {`${degree}, ${concentration}`}
                     {gpa && `, GPA: ${gpa}`}
@@ -111,34 +82,15 @@ const SchemeEducation = ({ education }) => {
                 <p>{graduationDate}</p>
             </div>
             <div>
-                {thesis &&
-                    <p><span className="fw-medium">Tesis: </span>{thesis}</p>
-                }
-                {courseWorks &&
-                    <p>Cursos relevantes: {courseWorks}</p>
-                }
-                {relevantEvents &&
-                    <p>{relevantEvents}</p>
-                }
+                {thesis && <p><span className="font-medium">Tesis: </span>{thesis}</p>}
+                {courseWorks && <p>Cursos relevantes: {courseWorks}</p>}
+                {relevantEvents && <p>{relevantEvents}</p>}
             </div>
         </div>
-    )
+    );
 }
 
 // Esquema de experiencia
-// datos que espera:
-// organization: nombre de la empresa
-// location: lugar donde se encuentra
-// position: cargoo o posicion que tienes
-// startDate: fecha de inicio, fecha en mes y año
-// endDate: fecha final, fecha en mes y año
-// description: descripcion de el trabajo
-/**
- * 
- * @param {object} experience - recibe un objeto, con los datos de la experiencia
- * @returns 
- */
-
 const SchemeExperience = ({ experience }) => {
     const {
         organization,
@@ -147,71 +99,44 @@ const SchemeExperience = ({ experience }) => {
         startDate,
         endDate,
         description
-    } = experience
+    } = experience;
 
     return (
         <div className="my-3">
-            <div className="d-flex justify-content-between">
-                <h3 className="h6"><strong>{organization}</strong></h3>
+            <div className="flex justify-between">
+                <h3 className="text-lg font-bold">{organization}</h3>
                 <p>{location}</p>
             </div>
-            <div className="d-flex justify-content-between">
-                <p className="fw-medium" >{position}</p>
+            <div className="flex justify-between">
+                <p className="font-medium">{position}</p>
                 <p>{startDate} - {endDate}</p>
             </div>
             <p>{description}</p>
         </div>
-    )
+    );
 }
 
-// Esquema del project
-// Datos que espera:
-// name: Nombre del proyecto
-// link: Link del proyecto (opcional)
-// description: descripcion del proyecto
-
-/**
- * 
- * @param {object} project - recibe un objeto, con los datos del proyecto
- * @returns 
- */
+// Esquema del proyecto
 const SchemeProjects = ({ project }) => {
-
     const {
         name,
         link,
         description
-    } = project
+    } = project;
 
     return (
         <div className="my-3">
-            <h3 className="h6" >
-                <strong>
-                    {name + ' '}
-                    {link &&
-                        <a href={link} target="_blank" rel="noreferrer">Link</a>}
-                </strong>
+            <h3 className="text-lg font-bold">
+                {name + ' '}
+                {link && <a href={link} target="_blank" rel="noreferrer" className="text-blue-500">Link</a>}
             </h3>
             <p>{description}</p>
         </div>
-    )
+    );
 }
 
-// Esquema de liderzgo y actividades
-// Datos que espera:
-// organization: organizacion donde se llevo a cabo
-// location: lugar
-// role: Que hiciste? cual fue tu papel?
-// startDate: Fecha de inicio
-// endDate: Fecha de fin
-// achievements: [] Logros que hiciste, o algunas descripciones
-/**
- * 
- * @param {object} leadership - recibe un objeto, con los datos de liderasgo y actividades
- * @returns 
- */
+// Esquema de liderazgo y actividades
 const SchemeLidership = ({ leadership }) => {
-
     const {
         organization,
         location,
@@ -219,47 +144,37 @@ const SchemeLidership = ({ leadership }) => {
         startDate,
         endDate,
         achievements
-    } = leadership
+    } = leadership;
 
     return (
-        <div className="my-3" >
-            <div className="d-flex justify-content-between">
-                <h3 className="h6"><strong>{organization}</strong></h3>
+        <div className="my-3">
+            <div className="flex justify-between">
+                <h3 className="text-lg font-bold">{organization}</h3>
                 <p>{location}</p>
             </div>
-            <div className="d-flex justify-content-between">
-                <p className="fw-medium" >{role}</p>
+            <div className="flex justify-between">
+                <p className="font-medium">{role}</p>
                 <p>{startDate} - {endDate}</p>
             </div>
-            {achievements.map((data, index) => {
-                return <p key={index} >{data}</p>
-            })}
+            {achievements.map((data, index) => (
+                <p key={index}>{data}</p>
+            ))}
         </div>
-    )
+    );
 }
 
 // Esquema de habilidades
-// Datos que espera:
-// category: nombre de la categoria de habilidads
-// skills: [] habilidades que posee
-
-/**
- * 
- * @param {object} technicalSkills - recibe un objeto, con los datos de liderasgo y actividades
- * @returns 
- */
 const SchemeSkills = ({ technicalSkills }) => {
-
     const {
         category,
         skills
-    } = technicalSkills
+    } = technicalSkills;
 
     return (
         <div className="my-2">
-            <p><strong>{category}: </strong>{skills.map((skill, index) => {
-                return (skills.length >= 2 && skills.length == index + 1) ? <span key={index}>{skill}</span> : <span key={index}>{skill}, </span>
-            })}</p>
+            <p><strong>{category}: </strong>{skills.map((skill, index) => (
+                skills.length >= 2 && skills.length === index + 1 ? <span key={index}>{skill}</span> : <span key={index}>{skill}, </span>
+            ))}</p>
         </div>
-    )
+    );
 }

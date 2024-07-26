@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { jsPDF } from 'jspdf';
-import CreateCV from './components/CreateCV';
 import TemplateHarvard from './components/TemplateHarvard';
+import person from '@/personFake';
 
 export default function Home() {
   // Datos Usuario Ingresado en el formulario
@@ -23,111 +23,6 @@ export default function Home() {
 
   // Datos Temporales de prueba
   const [user, setUser] = useState({})
-
-  const person = {
-
-    personalInfo: {
-      name: 'Billalbert ',
-      lastName: 'Martinez',
-      email: 'BillalbertCode@gmail.com',
-      phone: '04142240292',
-      linkedin: 'https://www.linkedin.com/in/billalbertcode'
-    },
-    education: [
-      {
-        name: 'Universidad de los Andes',
-        location: 'Mérida, Venezuela',
-        degree: 'Ingeniero en Sistemas',
-        concentration: 'Ingeniería de Sistemas',
-        gpa: '4.5/5',
-        graduationDate: 'Noviembre 2015',
-        thesis: 'Desarrollo de un sistema de gestión de proyectos'
-      },
-      {
-        name: 'Universidad Nacional Experimental del Táchira',
-        location: 'San Cristóbal, Venezuela',
-        degree: 'Licenciatura en Informática',
-        concentration: 'Informática',
-        gpa: '4.2/5',
-        graduationDate: 'Mayo 2010'
-      }
-    ],
-    experience: [
-      {
-        organization: 'Empresa XYZ',
-        location: 'Caracas, Venezuela',
-        position: 'Desarrollador de Software',
-        startDate: 'Enero 2018',
-        endDate: 'Junio 2020',
-        description: 'Desarrollo de aplicaciones web utilizando tecnologías como React, Node.js y MongoDB'
-      },
-      {
-        organization: 'Empresa ABC',
-        location: 'Mérida, Venezuela',
-        position: 'Analista de Sistemas',
-        startDate: 'Julio 2015',
-        endDate: 'Diciembre 2017',
-        description: 'Análisis y desarrollo de sistemas de información para la empresa'
-      }
-    ],
-    projects: [
-      {
-        name: 'Proyecto de gestión de proyectos',
-        link: 'https://github.com/billalbertcode/project-management',
-        description: 'Desarrollo de un sistema de gestión de proyectos utilizando tecnologías como React, Node.js y MongoDB'
-      },
-      {
-        name: 'Proyecto de análisis de datos',
-        link: 'https://github.com/billalbertcode/data-analysis',
-        description: 'Análisis de datos utilizando tecnologías como Python, Pandas y Matplotlib'
-      }
-    ],
-    leadershipAndActivities: [
-      {
-        organization: 'Universidad de los Andes Computer Club',
-        location: 'Mérida, Venezuela',
-        role: 'Membership Coordinator / Board Member',
-        startDate: 'Enero 2014',
-        endDate: 'Present',
-        achievements: [
-          'Organized marketing and advertising campaign, resulting in a 25% increase in membership.',
-          'Coordinated tech conference for forty professionals and 100 students.',
-          'Upgraded and enhanced website using WordPress.'
-        ]
-      },
-      {
-        organization: 'Venezuelan Robotics Team',
-        location: 'Caracas, Venezuela',
-        role: 'Team Lead',
-        startDate: 'Enero 2018',
-        endDate: 'Junio 2020',
-        achievements: [
-          'Led a team of 10 members to develop a robotic arm for industrial use.',
-          'Designed and implemented a control system for the robotic arm using Python and Arduino.'
-        ]
-      }
-    ],
-    technicalSkills: [
-      {
-        category: 'Programming',
-        skills: [
-          'JavaScript',
-          'Python',
-          'C++'
-        ]
-      },
-      {
-        category: 'Design',
-        skills: [
-          'Adobe XD',
-          'Figma',
-          'Wix',
-        ]
-      }
-    ]
-  }
-
-
 
   useEffect(() => {
     const userInfo = localStorage.getItem("user")
@@ -180,6 +75,7 @@ export default function Home() {
     e.preventDefault();
     saveInfoUser()
 
+
     // Peticion de los datos generados por IA
     const response = await fetch('/api/createcv', {
       method: 'POST',
@@ -219,67 +115,125 @@ export default function Home() {
   };
 
   return (
-    <div className='container d-flex flex-column align-items-center'>
+    <div className="container mx-auto flex flex-col items-center">
       <h1>Generador de CV</h1>
-      <form style={{ width: "50vw" }} className='mb-4' onSubmit={handleSubmit}>
-        <div className='d-flex justify-content-between'>
+      <form className="w-1/2 mb-4" onSubmit={handleSubmit}>
+        <div className="flex justify-between mb-4">
           <div>
-            <label className='form-label'>Nombre</label>
-            <input className='form-control' value={name} onChange={(e) => setName(e.target.value)} type='text' />
+            <label className="block text-sm font-medium text-gray-700">Nombre</label>
+            <input
+              className="form-input mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              type="text"
+            />
           </div>
           <div>
-            <label className='form-label'>Apellido</label>
-            <input className='form-control' value={lastName} onChange={(e) => setLastName(e.target.value)} type='text' />
+            <label className="block text-sm font-medium text-gray-700">Apellido</label>
+            <input
+              className="form-input mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              type="text"
+            />
           </div>
         </div>
-        <div>
-          <label className='form-label'>Numero de telefono</label>
-          <input className='form-control' value={phone} onChange={(e) => setPhone(e.target.value)} type='number' />
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Número de teléfono</label>
+          <input
+            className="form-input mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            type="number"
+          />
         </div>
-        <div>
-          <label className='form-label'>Correo electronico</label>
-          <input className='form-control' value={email} onChange={(e) => setEmail(e.target.value.toLowerCase())} type='email' />
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Correo electrónico</label>
+          <input
+            className="form-input mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            value={email}
+            onChange={(e) => setEmail(e.target.value.toLowerCase())}
+            type="email"
+          />
         </div>
-        <div>
-          <label className='form-label'>Linkedin Link</label>
-          <input className='form-control' value={linkedin} onChange={(e) => setLinkedin(e.target.value)} type='text' />
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">LinkedIn Link</label>
+          <input
+            className="form-input mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            value={linkedin}
+            onChange={(e) => setLinkedin(e.target.value)}
+            type="text"
+          />
         </div>
-        <div>
-          <label className='form-label'>Portfolio Link</label>
-          <input className='form-control' value={portfolio} onChange={(e) => setPortfolio(e.target.value)} type='text' />
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Portfolio Link</label>
+          <input
+            className="form-input mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            value={portfolio}
+            onChange={(e) => setPortfolio(e.target.value)}
+            type="text"
+          />
         </div>
-        <div>
-          <label className='form-label'>Descripción:</label>
-          <textarea className='form-control' value={description} onChange={(e) => setDescription(e.target.value)} />
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Descripción:</label>
+          <textarea
+            className="form-textarea mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
         </div>
-        <div>
-          <label className='form-label'>Habilidades:</label>
-          <textarea className='form-control' value={skills} onChange={(e) => setSkills(e.target.value)} />
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Habilidades:</label>
+          <textarea
+            className="form-textarea mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            value={skills}
+            onChange={(e) => setSkills(e.target.value)}
+          />
         </div>
-        <div>
-          <label className='form-label'>Educación:</label>
-          <textarea className='form-control' value={education} onChange={(e) => setEducation(e.target.value)} />
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Educación:</label>
+          <textarea
+            className="form-textarea mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            value={education}
+            onChange={(e) => setEducation(e.target.value)}
+          />
         </div>
-        <div>
-          <label className='form-label'>Experiencia:</label>
-          <textarea className='form-control' value={experience} onChange={(e) => setExperience(e.target.value)} />
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Experiencia:</label>
+          <textarea
+            className="form-textarea mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            value={experience}
+            onChange={(e) => setExperience(e.target.value)}
+          />
         </div>
-        <div>
-          <label className='form-label'>Proyectos:</label>
-          <textarea className='form-control' value={projects} onChange={(e) => setProjects(e.target.value)} />
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Proyectos:</label>
+          <textarea
+            className="form-textarea mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            value={projects}
+            onChange={(e) => setProjects(e.target.value)}
+          />
         </div>
-        <div>
-          <label className='form-label'>Descripción del Trabajo:</label>
-          <textarea className='form-control' value={jobDescription} onChange={(e) => setJobDescription(e.target.value)} />
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Descripción del Trabajo:</label>
+          <textarea
+            className="form-textarea mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            value={jobDescription}
+            onChange={(e) => setJobDescription(e.target.value)}
+          />
         </div>
-        <button className='btn btn-secondary' type="submit">Generar CV</button>
+        <button className="btn bg-gray-700 text-white py-2 px-4 rounded" type="submit">
+          Generar CV
+        </button>
       </form>
       {cv && (
-        <div className='container'>
+        <div className="container mx-auto">
           <h2>CV Generado:</h2>
-          <div className='container text-danger'>{cv}</div>
+          <div className="container text-red-500">{cv}</div>
           {/* <pre>{cv}</pre> */}
-          <button className='btn btn-success' onClick={handleDownload}>Descargar como PDF</button>
+          <button className="btn bg-green-500 text-white py-2 px-4 rounded mt-4" onClick={handleDownload}>
+            Descargar como PDF
+          </button>
         </div>
       )}
       <TemplateHarvard user={person} />
