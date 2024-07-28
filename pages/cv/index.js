@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { jsPDF } from 'jspdf';
 import TemplateHarvard from './components/TemplateHarvard';
 import person from '@/personFake';
+import { FormUser } from '@/components/component/form-user';
 
 export default function Home() {
   // Datos Usuario Ingresado en el formulario
@@ -45,6 +46,8 @@ export default function Home() {
         setEducation(parsedUserInfo.education)
         setExperience(parsedUserInfo.experience)
         setProjects(parsedUserInfo.projects)
+
+        console.log(userInfo)
       }
       catch (error) {
         console.error("Error parsing user info from localStorage:", error);
@@ -117,7 +120,7 @@ export default function Home() {
   return (
     <div className="container mx-auto flex flex-col items-center">
       <h1>Generador de CV</h1>
-      <form className="w-1/2 mb-4" onSubmit={handleSubmit}>
+      {/* <form className="w-1/2 mb-4" onSubmit={handleSubmit}>
         <div className="flex justify-between mb-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">Nombre</label>
@@ -225,7 +228,7 @@ export default function Home() {
         <button className="btn bg-gray-700 text-white py-2 px-4 rounded" type="submit">
           Generar CV
         </button>
-      </form>
+      </form> */}
       {cv && (
         <div className="container mx-auto">
           <h2>CV Generado:</h2>
@@ -236,7 +239,10 @@ export default function Home() {
           </button>
         </div>
       )}
-      <TemplateHarvard user={person} />
+      <div style={{ width: '500px' }}>
+        <FormUser />
+      </div>
+      <TemplateHarvard user={person} personfake={user} />
     </div>
   );
 }

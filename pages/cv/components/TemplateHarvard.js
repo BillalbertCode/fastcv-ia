@@ -1,11 +1,19 @@
-import { useRef } from "react"
+import { useRef, useEffect } from "react"
 import createPDF from "../utils/createPDF";
 // Añadir lo necesario para el mapeo del array de objeto
 // Analizar si necesita un tipo distinto de distribucion segun el tipo de carrera
 
-const TemplateHarvard = ({ user }) => {
+const TemplateHarvard = ({ user, personfake }) => {
+
+    useEffect(() => {
+        console.log(user, personfake)
+    }, [personfake]);
     // Hacemos referencia al elemento para luego poder descargarlo
     const cvRef = useRef(null);
+
+    if (!user.personalInfo) {
+        return <div>Loading...</div>
+    }
 
     return (
         <>
@@ -16,36 +24,56 @@ const TemplateHarvard = ({ user }) => {
                         {`${user.personalInfo.email} | ${user.personalInfo.phone} |`} <a href="https://example.com" className="text-blue-500">linkedin</a>
                     </div>
                 </div>
-                <div className="mt-4">
-                    <p className="text-center underline">Educación</p>
-                    {user.education.map((edu, index) => (
-                        <SchemeEducation key={index} education={edu} />
-                    ))}
-                </div>
-                <div className="mt-4">
-                    <p className="text-center underline">Experiencia</p>
-                    {user.experience.map((exp, index) => (
-                        <SchemeExperience key={index} experience={exp} />
-                    ))}
-                </div>
-                <div className="mt-4">
-                    <p className="text-center underline">Proyectos</p>
-                    {user.projects.map((project, index) => (
-                        <SchemeProjects key={index} project={project} />
-                    ))}
-                </div>
-                <div className="mt-4">
-                    <p className="text-center underline">Liderazgo y Actividades</p>
-                    {user.leadershipAndActivities.map((leadership, index) => (
-                        <SchemeLidership key={index} leadership={leadership} />
-                    ))}
-                </div>
-                <div className="mt-4">
-                    <p className="text-center">Habilidades Técnicas</p>
-                    {user.technicalSkills.map((skill, index) => (
-                        <SchemeSkills key={index} technicalSkills={skill} />
-                    ))}
-                </div>
+                {user.education.length > 0 &&
+                    (
+                        <div className="mt-4">
+                            <p className="text-center underline">Educación</p>
+                            {user.education.map((edu, index) => (
+                                <SchemeEducation key={index} education={edu} />
+                            ))}
+                        </div>
+                    )
+                }
+                {user.experience.length > 0 &&
+                    (
+                        <div className="mt-4">
+                            <p className="text-center underline">Experiencia</p>
+                            {user.experience.map((exp, index) => (
+                                <SchemeExperience key={index} experience={exp} />
+                            ))}
+                        </div>
+                    )
+                }
+                {user.projects.length > 0 &&
+                    (
+                        <div className="mt-4">
+                            <p className="text-center underline">Proyectos</p>
+                            {user.projects.map((project, index) => (
+                                <SchemeProjects key={index} project={project} />
+                            ))}
+                        </div>
+                    )
+                }
+                {user.leadershipAndActivities.length > 0 &&
+                    (
+                        <div className="mt-4">
+                            <p className="text-center underline">Liderazgo y Actividades</p>
+                            {user.leadershipAndActivities.map((leadership, index) => (
+                                <SchemeLidership key={index} leadership={leadership} />
+                            ))}
+                        </div>
+                    )
+                }
+                {user.technicalSkills.length > 0 &&
+                    (
+                        <div className="mt-4">
+                            <p className="text-center">Habilidades Técnicas</p>
+                            {user.technicalSkills.map((skill, index) => (
+                                <SchemeSkills key={index} technicalSkills={skill} />
+                            ))}
+                        </div>
+                    )
+                }
             </div>
             <button className="btn bg-green-500 text-white py-2 px-4 rounded mt-4" onClick={() => createPDF(cvRef)}>Generar PDF</button>
         </>
