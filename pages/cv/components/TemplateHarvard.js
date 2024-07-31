@@ -3,11 +3,8 @@ import createPDF from "../utils/createPDF";
 // Añadir lo necesario para el mapeo del array de objeto
 // Analizar si necesita un tipo distinto de distribucion segun el tipo de carrera
 
-const TemplateHarvard = ({ user, personfake }) => {
+const TemplateHarvard = ({ user }) => {
 
-    useEffect(() => {
-        console.log(user, personfake)
-    }, [personfake]);
     // Hacemos referencia al elemento para luego poder descargarlo
     const cvRef = useRef(null);
 
@@ -75,7 +72,7 @@ const TemplateHarvard = ({ user, personfake }) => {
                     )
                 }
             </div>
-            <button className="btn bg-green-500 text-white py-2 px-4 rounded mt-4" onClick={() => createPDF(cvRef)}>Generar PDF</button>
+            <button className="btn bg-red-700 hover:bg-red-600 text-white py-2 px-4 rounded mt-4" onClick={() => createPDF(cvRef)}>Descargar PDF</button>
         </>
     );
 }

@@ -47,30 +47,16 @@ Return de descripciones
 
 ### Object Res
 
-´´´const schema = z.object({
-    personDescription: z.string(),
-    skills: z.array(z.object({ name: z.string(), description: z.string() })),
-    studies: z.array(z.object({
-      name: z.string(),
-      site: z.string(),
-      dateInit: z.string(),
-      dateEnd: z.string(),
-      description: z.string(),
-      type: z.string()
-    })),
-    experience: z.array(z.object({
-      employment: z.string(),
-      name: z.string(),
-      site: z.string(),
-      dateInit: z.string(),
-      dateEnd: z.string(),
-      description: z.string()
-    })),
-    projects: z.array(z.object({
-      name: z.string(),
-      link: z.string(),
-      description: z.string()
-    })),
-    compatibilityWithWork: z.number(),
-    feedbackMessage: z.string()
-  })´´´
+´´´cv = {
+      personalInfo: {
+        name: personalInfo.name,
+        lastName: personalInfo.lastName,
+        email: personalInfo.email,
+        phone: personalInfo.phone
+      },
+      education: googleResponse.object.education,
+      experience: googleResponse.object.experience,
+      projects: googleResponse.object.projects,
+      leadershipAndActivities: googleResponse.object.leadershipAndActivities,
+      technicalSkills: googleResponse.object.technicalSkills
+    }´´´
