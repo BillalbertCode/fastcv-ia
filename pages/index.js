@@ -1,6 +1,7 @@
 import Head from "next/head";
 import Image from "next/image";
 import { Inter } from "next/font/google";
+import { FormUser } from "@/components/component/form-user";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,7 +16,8 @@ export default function Home() {
       </Head>
       <main className='bg-green-500'>
         <h1 className="">hola</h1>
-        <button className="bg-green-500">button</button>
+        <button>button</button>
+        <FormUser/>
       </main>
     </>
   );

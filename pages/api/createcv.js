@@ -18,6 +18,8 @@ const getEstudios = (education) => {
        Promedio: ${edu.gpa}
        Fecha de graduación: ${edu.graduationDate}
        Tesis: ${edu.thesis}
+       ${edu.relevantEvents && ("Eventos Relevantes en la institucion " + edu.relevantEvents)}
+       ${edu.courseWorks && ("Cursos hechos en la universidad" + edu.courseWorks)}
   `
   )).join('\n');
 }
@@ -37,6 +39,7 @@ const getExperience = (experience) => {
 const getProjects = (projects) => {
   return projects.map((project, index) => (
     ` Nombre del proyecto: ${project.name}
+    Posicion/Puesto: ${project.position}
     Descripcion del proyecto: ${project.description}
 `
   )).join('\n')
@@ -80,6 +83,8 @@ export default async function handler(req, res) {
       gpa: z.string(),
       graduationDate: z.string(),
       thesis: z.string(),
+      relevantEvents: z.string(),
+      courseWorks: z.string(),
       type: z.string()
     })),
     experience: z.array(z.object({

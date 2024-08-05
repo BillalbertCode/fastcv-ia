@@ -12,28 +12,38 @@ Api que usa la inteligencia artificial geminis para resumir y adaptar tu cv a un
 - portfolio *opcional* string - link
 - description *requerido*  strign - link
 - skills *requerido* array(object({ name: string, description: string(**Opcional**) }))
-- studies *requerido* array( {
+- education *requerido* array( {
     name: string(nombre de la institucion),
-    site: string,
-    dateInit - string,
-    dateEnd - string,
-    description - string **opcional**
-    carrera - string, 
-    type - string(tipo de carrera)
+    location: string,
+    degree - string,
+    concentration - string,
+    gpa - string **opcional**
+    graduationDate - string, 
+    thesis - string **opcional**
+    relevantEvents - string **opcional**
+    courseWorks - string **opcional**
    })
 - experience *requerido* array ({
-    employment - string,
-    name - string(nombre de la empresa)
-    dateInit - string,
-    dateEnd - string,
+    organization - string,
+    location - string,
+    position - string
+    startDate - string,
+    endDate - string
     description - string
    })
 - projects *opcional*array.object {
     name - string(nombre del proyecto), 
+    position - string
     description - string,
-    link - string(link del proyecto),
-    skills - array.string(habilidades usadas en el proyecto) **proximo**
    }
+- Leadership *opcional* array.object{
+  organization - string,
+  role - string
+  location - string
+  startDate - string
+  endDate -string
+  achievements - string
+}
 - jobDescription *opcional* string
 
 #### Notes
