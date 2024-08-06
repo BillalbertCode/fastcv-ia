@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import TemplateHarvard from './cv/components/TemplateHarvard';
+import TemplateHarvard from '@/components/cv/components/TemplateHarvard';
 import person from '@/personFake';
-import { fetchCreateCV } from './cv/utils/fetchCreateCv';
+import { fetchCreateCV } from '@/components/cv/utils/fetchCreateCv';
 import { FormUser } from '@/components/component/form-user';
-import JobForm from './cv/components/JobForm';
+import JobForm from '@/components/cv/components/JobForm';
 
 export default function Home() {
   // Datos del CV generado

@@ -127,7 +127,7 @@ export default async function handler(req, res) {
     - Proyectos segun la persona, descripcion de maximo 350 caracteres por proyecto : ${getProjects(projects)}  maximo 2 proyectos segun los mas compatibles con el empleo.
     - Liderazgo y Actividades segun la persona, descripcion de maximo 350 caracteres por Actividad: ${getleadershipAndActivities(leadershipAndActivities)} maximo 2 segun los mas compatibles con el empleo.
     - Habilidades Tecnicas segun la persona: ${getTechnicalSkills(technicalSkills)}, analiza el resto de informacion del usuario para añadir nuevas habilidades, y dividelo en categorias 
-    Dale una puntuacion de que tan compatible es la persona con la descripcion del empleo, del 1 al 100 y un mensaje de feedback segun que deberia aprender o mejorar para el empleo que esta solicitando.
+    Dale una puntuacion de que tan compatible es la persona con la descripcion del empleo del 1 al 100 , y un mensaje de feedback segun que deberia aprender o mejorar para el empleo que esta solicitando.
     `;
   try {
     // Peticion de respuesta IA
