@@ -15,7 +15,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false)
 
   // Manejo ed errores
-  const [error, setError] = useState({})
+  const [error, setError] = useState(false)
 
   // Recuperacion de la informacion almacenada en las Cookies
   useEffect(() => {
@@ -67,8 +67,8 @@ export default function Home() {
           <div className='flex flex-col justify-center'>
             <JobForm onChange={handleJobDescriptionChange} feedbackMessage={cv.feedbackMessage} compatibilityWithWork={cv.compatibilityWithWork} />
             <button disabled={Object.keys(user).length === 0} onClick={handleSubmit} className="btn bg-green-500 text-white mx-auto py-2 px-4 rounded">Generar Cv </button>
-              <p className="text-center font-medium">{loading ? "Generando CV por favor espere...": " "}</p>
-              <p className="text-center text-red-600 font-medium">{error}</p>
+            <p className="text-center font-medium">{loading ? "Generando CV por favor espere..." : " "}</p>
+            <p className="text-center text-red-600 font-medium">{error && `Error, recargue la pagina:${error}`}</p>
           </div>
         </div>
 
