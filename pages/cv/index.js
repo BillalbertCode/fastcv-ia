@@ -3,13 +3,12 @@ import TemplateHarvard from './components/TemplateHarvard';
 import person from '@/personFake';
 import { fetchCreateCV } from './utils/fetchCreateCv';
 import { FormUser } from '@/components/component/form-user';
+import JobForm from './components/JobForm';
 
 export default function Home() {
-  // Datos del Trabajo
-  const [jobDescription, setJobDescription] = useState('');
   // Datos del CV generado
   const [cv, setCv] = useState({});
-  // Datos Temporales
+  // Datos usuario
   const [user, setUser] = useState({})
 
   // Manejo ed errores
@@ -42,6 +41,7 @@ export default function Home() {
     if (response) {
       if ('cv' in response) {
         setCv(response.cv)
+        console.log(response.cv)
       } else {
         console.error(response.error)
         setError(response.error)
@@ -49,18 +49,30 @@ export default function Home() {
     }
   }
 
+  // Descripcion del empleo
+  const handleJobDescriptionChange = (e) => {
+    setUser({ ...user, jobDescription: e.target.value });
+  };
   return (
-    <div className="container mx-auto flex flex-col items-center">
-      <h1>Generador de CV</h1>
-      <div className="grid grid-cols-3">
-        <FormUser />
+    <div>
+
+      <div className="container mx-auto my-4">
+        <div className="grid grid-cols-2">
+          <div className='w-full' style={{ maxWidth: "640px" }}>
+            <FormUser />
+          </div>
+          <div className='flex flex-col justify-center'>
+            <JobForm onChange={handleJobDescriptionChange} feedbackMessage={cv.feedbackMessage} compatibilityWithWork={cv.compatibilityWithWork} />
+            <button disabled={Object.keys(user).length === 0} onClick={handleSubmit} className="btn bg-green-500 text-white mx-auto py-2 px-4 rounded">Generar Cv </button>
+          </div>
+        </div>
+
+      </div>
+      <div className='my-4 flex flex-col'>
         {
           Object.keys(cv).length !== 0 &&
           <TemplateHarvard user={cv} />
         }
-      </div>
-      <div>
-        <button onClick={handleSubmit} className="btn bg-green-500 text-white py-2 px-4 rounded">Generar Cv </button>
       </div>
     </div>
   );

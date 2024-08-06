@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react"
+import { useRef } from "react"
 import createPDF from "../utils/createPDF";
 // Añadir lo necesario para el mapeo del array de objeto
 // Analizar si necesita un tipo distinto de distribucion segun el tipo de carrera
@@ -14,17 +14,19 @@ const TemplateHarvard = ({ user }) => {
 
     return (
         <>
-            <div ref={cvRef} className="container mx-auto p-5 bg-white text-black">
+            <button style={{ width: "920px" }} className="btn bg-red-700 hover:bg-red-600 text-white py-2 px-4 rounded mt-4 mx-auto" onClick={() => createPDF(cvRef)}>Descargar PDF</button>
+
+            <div ref={cvRef} style={{ width: "920px" }} className="container mx-auto p-5 bg-white text-black">
                 <div className="flex flex-col items-center">
                     <h1 className="text-2xl">{`${user.personalInfo.name} ${user.personalInfo.lastName} `}</h1>
                     <div>
-                        {`${user.personalInfo.email} | ${user.personalInfo.phone} |`} <a href="https://example.com" className="text-blue-500">linkedin</a>
+                        {`${user.personalInfo.email} | ${user.personalInfo.phone} `} 
                     </div>
                 </div>
                 {user.education.length > 0 &&
                     (
                         <div className="mt-4">
-                            <p className="text-center underline">Educación</p>
+                            <p className="text-center ">Educación</p>
                             {user.education.map((edu, index) => (
                                 <SchemeEducation key={index} education={edu} />
                             ))}
@@ -34,7 +36,7 @@ const TemplateHarvard = ({ user }) => {
                 {user.experience.length > 0 &&
                     (
                         <div className="mt-4">
-                            <p className="text-center underline">Experiencia</p>
+                            <p className="text-center ">Experiencia</p>
                             {user.experience.map((exp, index) => (
                                 <SchemeExperience key={index} experience={exp} />
                             ))}
@@ -44,7 +46,7 @@ const TemplateHarvard = ({ user }) => {
                 {user.projects.length > 0 &&
                     (
                         <div className="mt-4">
-                            <p className="text-center underline">Proyectos</p>
+                            <p className="text-center ">Proyectos</p>
                             {user.projects.map((project, index) => (
                                 <SchemeProjects key={index} project={project} />
                             ))}
@@ -54,7 +56,7 @@ const TemplateHarvard = ({ user }) => {
                 {user.leadershipAndActivities.length > 0 &&
                     (
                         <div className="mt-4">
-                            <p className="text-center underline">Liderazgo y Actividades</p>
+                            <p className="text-center ">Liderazgo y Actividades</p>
                             {user.leadershipAndActivities.map((leadership, index) => (
                                 <SchemeLidership key={index} leadership={leadership} />
                             ))}
@@ -72,7 +74,6 @@ const TemplateHarvard = ({ user }) => {
                     )
                 }
             </div>
-            <button className="btn bg-red-700 hover:bg-red-600 text-white py-2 px-4 rounded mt-4" onClick={() => createPDF(cvRef)}>Descargar PDF</button>
         </>
     );
 }
@@ -102,14 +103,14 @@ const SchemeEducation = ({ education }) => {
             <div className="flex justify-between">
                 <p>
                     {`${degree}, ${concentration}`}
-                    {gpa && `, GPA: ${gpa}`}
+                    {gpa !== "undefined" && `, GPA: ${gpa}`}
                 </p>
                 <p>{graduationDate}</p>
             </div>
             <div>
-                {thesis && <p><span className="font-medium">Tesis: </span>{thesis}</p>}
-                {courseWorks && <p>Cursos relevantes: {courseWorks}</p>}
-                {relevantEvents && <p>{relevantEvents}</p>}
+                {thesis !== "undefined" && <p><span className="font-medium">Tesis: </span>{thesis}</p>}
+                {courseWorks !== "undefined" && <p>Cursos relevantes: {courseWorks}</p>}
+                {relevantEvents !== "undefined" && <p>{relevantEvents}</p>}
             </div>
         </div>
     );

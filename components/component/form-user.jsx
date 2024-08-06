@@ -155,13 +155,15 @@ export function FormUser() {
               <Input name="lastName" value={user.personalInfo.lastName} onChange={(e) => handleInputChange(e, "personalInfo")} id="lastName" placeholder="Enter your last name" />
             </div>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input name="email" value={user.personalInfo.email} onChange={(e) => handleInputChange(e, "personalInfo")} type="email" id="email" placeholder="Email" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="phone">Phone</Label>
-            <Input name="phone" value={user.personalInfo.phone} onChange={(e) => handleInputChange(e, "personalInfo")} id="phone" placeholder="Enter your phone number" />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input name="email" value={user.personalInfo.email} onChange={(e) => handleInputChange(e, "personalInfo")} type="email" id="email" placeholder="Email" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="phone">Phone</Label>
+              <Input name="phone" value={user.personalInfo.phone} onChange={(e) => handleInputChange(e, "personalInfo")} id="phone" placeholder="Enter your phone number" />
+            </div>
           </div>
           <div className="space-y-2">
             <Label htmlFor="description">Description</Label>
@@ -188,7 +190,7 @@ export function FormUser() {
                       <div className="transition grid grid-cols-3 gap-2">
                         {user.technicalSkills.map((skill, index) => (
                           <div key={index} className="grid grid-cols-3 bg-slate-700 space-x-2 text-center rounded ">
-                            <p className="col-span-2">{skill.name}</p>
+                            <p className="col-span-2 text-sm">{skill.name}</p>
                             <button className="transition bg-red-600 hover:bg-red-700 flex justify-center items-center rounded-r" onClick={() => handleDeleteArray("technicalSkills", index)}>
                               <TrashIco />
                             </button>
@@ -499,7 +501,7 @@ export function FormUser() {
         </div>
       </CardContent>
       <CardFooter className="flex justify-end">
-        <Button className="border bg-teal-600 hover:bg-green-600 rounded-full" onClick={saveInfoUser}>Guardar Informacion <SaveIco/></Button>
+        <Button className="border bg-teal-600 hover:bg-green-600 rounded-full" onClick={saveInfoUser}>Guardar Informacion <SaveIco /></Button>
       </CardFooter>
     </Card>)
   );

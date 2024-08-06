@@ -117,17 +117,18 @@ export default async function handler(req, res) {
 
   //  Prompt con las intrucciones de la creacion de la respuesta de la IA
   const prompt = `
-    Segun la informacion de esta persona, modifica de manera veridica la informacion de la persona para que se adapte a la descripcion del empleo
+    Segun la informacion de esta persona, modifica de manera veridica la informacion de la persona para que se adapte a la descripcion del empleo 
+    para crear un cv con las reglas de harvard de como crear un resume apropiado.
+    Detalles relevantes: todos los formatos de fechas lo colocas como mes y año, toda la informacion no proporcionada la colocas como "undefined"
+    - Descripcion del empleo ${jobDescription}
     - Auto Descripción de la persona, maximo 300 caracteres: ${personalInfo.description}
-    - Estudios segun la persona: ${getEstudios(education)}
-    - Experiencia segun la persona, descripcion de maximo 350 caracteres por empleo: ${getExperience(experience)}
-    - Proyectos segun la persona, descripcion de maximo 350 caracteres por proyecto : ${getProjects(projects)}
-    - Liderazgo y Actividades segun la persona, descripcion de maximo 350 caracteres por Actividad: ${getleadershipAndActivities(leadershipAndActivities)}
-    - Habilidades segun la persona, soft-Skill y Hard-skils mas apropiadas para el empleo agrupadas en categorias: ${getTechnicalSkills(technicalSkills)}
-
+    - Estudios segun la persona: ${getEstudios(education)} maximo 3 estudios segun los mas compatibles con el empleo
+    - Experiencia segun la persona, descripcion de maximo 350 caracteres por empleo: ${getExperience(experience)}  maximo 3 experiencias segun los mas compatibles con el empleo
+    - Proyectos segun la persona, descripcion de maximo 350 caracteres por proyecto : ${getProjects(projects)}  maximo 2 proyectos segun los mas compatibles con el empleo.
+    - Liderazgo y Actividades segun la persona, descripcion de maximo 350 caracteres por Actividad: ${getleadershipAndActivities(leadershipAndActivities)} maximo 2 segun los mas compatibles con el empleo.
+    - Habilidades Tecnicas segun la persona, soft-Skill y Hard-skils mas apropiadas para el empleo agrupadas en categorias: ${getTechnicalSkills(technicalSkills)}.
+    Dale una puntuacion de compatibilidad con el empleo del 1 al 100 con total sinceridad y un mensaje de feedback segun que deberia aprender o mejorar para el empleo que esta solicitando.
     `;
-  // Dale una puntuacion de compatibilidad con el empleo del 1 al 100 con total sinceridad y un mensaje de feedback segun que deberia aprender o mejorar para el puesto y que le faltaria
-  // - Descripción del trabajo ${jobDescription}
   try {
     // Peticion de respuesta IA
     const googleResponse = await generateObject({
@@ -150,7 +151,9 @@ export default async function handler(req, res) {
       experience: googleResponse.object.experience,
       projects: googleResponse.object.projects,
       leadershipAndActivities: googleResponse.object.leadershipAndActivities,
-      technicalSkills: googleResponse.object.technicalSkills
+      technicalSkills: googleResponse.object.technicalSkills,
+      compatibilityWithWork: googleResponse.object.compatibilityWithWork,
+      feedbackMessage: googleResponse.object.feedbackMessage
     }
     res.status(200).json({ cv: cv });
   } catch (error) {
