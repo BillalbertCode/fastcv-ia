@@ -68,7 +68,7 @@ export default function Home() {
             <JobForm onChange={handleJobDescriptionChange} feedbackMessage={cv.feedbackMessage} compatibilityWithWork={cv.compatibilityWithWork} />
             <button disabled={Object.keys(user).length === 0} onClick={handleSubmit} className="btn bg-green-500 text-white mx-auto py-2 px-4 rounded">Generar Cv </button>
               <p className="text-center font-medium">{loading ? "Generando CV por favor espere...": " "}</p>
-            
+              <p className="text-center text-red-600 font-medium">{error}</p>
           </div>
         </div>
 

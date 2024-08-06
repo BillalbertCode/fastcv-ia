@@ -42,8 +42,6 @@ export function FormUser() {
         console.error("Error parsing user info from localStorage:", error);
       }
     }
-    console.log(user)
-
   }, []);
 
 
