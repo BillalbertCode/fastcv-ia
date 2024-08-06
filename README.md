@@ -1,6 +1,6 @@
 # Fastcv-ia
  Aplicacion Web para la creacion de CV de manera profesional, rapida y dinamica con el uso de la IA Geminis
-
+ Consiste en colocar lo maximo de información posible sobre tí para crear un curriculum y adaptarlo a un puesto de trabajo
 ## API /api/createcv
 Api que usa la inteligencia artificial geminis para resumir y adaptar tu cv a una propuesta de trabajo
 ### Campos Req
