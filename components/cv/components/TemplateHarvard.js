@@ -146,7 +146,7 @@ const SchemeExperience = ({ experience }) => {
 const SchemeProjects = ({ project }) => {
     const {
         name,
-        link,
+        position,
         description
     } = project;
 
@@ -154,7 +154,7 @@ const SchemeProjects = ({ project }) => {
         <div className="my-3">
             <h3 className="text-lg font-bold">
                 {name + ' '}
-                {link && <a href={link} target="_blank" rel="noreferrer" className="text-blue-500">Link</a>}
+                <span className="font-normal">{position}</span>
             </h3>
             <p>{description}</p>
         </div>
