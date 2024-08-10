@@ -15,9 +15,9 @@ const getEstudios = (education) => {
        Ubicación: ${edu.location}
        Título: ${edu.degree}
        Concentración: ${edu.concentration}
-       Promedio: ${edu.gpa}
        Fecha de graduación: ${edu.graduationDate}
-       Tesis: ${edu.thesis}
+       ${edu.gpa && ("Promedio:" + edu.gpa)}
+       ${edu.thesis && ("Tesis:" + edu.thesis)}
        ${edu.relevantEvents && ("Eventos Relevantes en la institucion " + edu.relevantEvents)}
        ${edu.courseWorks && ("Cursos hechos en la universidad" + edu.courseWorks)}
   `
@@ -60,7 +60,7 @@ const getleadershipAndActivities = (leadershipAndActivities) => {
 
 const getTechnicalSkills = (skills) => {
   return skills.map((skill, index) => (
-    `Habilidad ${index} :${skill}`
+    `Habilidad ${index} :${skill.name}`
   )).join('\n')
 }
 
@@ -97,6 +97,7 @@ export default async function handler(req, res) {
     })),
     projects: z.array(z.object({
       name: z.string(),
+      position: z.string(),
       description: z.string()
     })),
     leadershipAndActivities: z.array(z.object({
