@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Separator } from "@/components/ui/separator"
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible"
 import { Button } from "@/components/ui/button"
-import { InfoIco, SaveIco, TrashIco } from "../resources/Icons"
+import { ErrorIco, InfoIco, SaveIco, TrashIco } from "../resources/Icons"
 
 export function FormUser() {
 
@@ -138,15 +138,23 @@ export function FormUser() {
   return (
     (<Card className="w-full max-w-3xl">
       <CardHeader>
-        <CardTitle>User Profile</CardTitle>
-        <CardDescription>Update your profile information.</CardDescription>
+        <CardTitle>Perfil de Usuario</CardTitle>
+        <CardDescription>Actualiza la información de tu perfil.</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid gap-6">
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="firstName">First Name</Label>
-              <Input name="name" value={user.personalInfo.name} onChange={(e) => handleInputChange(e, "personalInfo")} id="firstName" placeholder="Enter your first name" />
+            <div className="space-y-1">
+              <Label htmlFor="firstName" >Nombre</Label>
+              {/* <Input name="name" value={user.personalInfo.name} onChange={(e) => handleInputChange(e, "personalInfo")} id="firstName" placeholder="Nombre" /> */}
+              <Input
+                name="name"
+                value={user.personalInfo.name}
+                onChange={(e) => handleInputChange(e, "personalInfo")}
+                className="text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"
+                id="firstName"
+                placeholder="Nombre" />
+              <label title="error message" htmlFor="firstName" className="text-red-500 ml-1 flex items-end justify-between"><p className="text-xs basis-4/5 ">Texto de ejemplo</p><ErrorIco /></label>
             </div>
             <div className="space-y-2">
               <Label htmlFor="lastName">Last Name</Label>
