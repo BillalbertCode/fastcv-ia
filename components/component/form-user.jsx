@@ -1,6 +1,7 @@
 // Fprmulario de informacion de usuario
 // Contiene los manejadores de los input y el guardado de la informacion en cache
 import { useState, useEffect } from "react"
+// UI components
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
@@ -8,7 +9,11 @@ import { Textarea } from "@/components/ui/textarea"
 import { Separator } from "@/components/ui/separator"
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible"
 import { Button } from "@/components/ui/button"
+// Iconos
 import { ErrorIco, InfoIco, SaveIco, TrashIco } from "../resources/Icons"
+// Schema
+import { skillSchema, educationSchema } from "../schemas/userInfo.schema"
+
 
 export function FormUser() {
 
@@ -56,11 +61,11 @@ export function FormUser() {
       location: '',
       degree: '',
       concentration: '',
-      gpa: '',
+      gpa: undefined,
       graduationDate: '',
-      thesis: '',
-      relevantEvents: '',
-      courseWorks: ''
+      thesis: undefined,
+      relevantEvents: undefined,
+      courseWorks: undefined
     },
     experience: {
       organization: '',
@@ -75,7 +80,6 @@ export function FormUser() {
       role: '',
       link: '',
       description: ''
-
     },
     leadershipAndActivities: {
       organization: '',
@@ -87,6 +91,8 @@ export function FormUser() {
     }
   });
 
+  // Manejo de Errores de los inputs
+  const [errorInput, setErrorInput] = useState({})
 
   // control de inputs directos
   const handleInputChange = (e, objectKeyName) => {
@@ -113,8 +119,9 @@ export function FormUser() {
   // Manejador del evento de añadir 
   // Añade el array
   const handleAddArray = (arrayName) => {
+    console.log(educationSchema.parse(infoInput[arrayName]))
     setUser({ ...user, [arrayName]: [...user[arrayName], infoInput[arrayName]] });
-
+    
     // Reseteamos los campos del formulario 
     setInfoInput({
       ...infoInput,
@@ -237,7 +244,7 @@ export function FormUser() {
                   <div className="grid grid-cols-3 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="graduation-year">Año de Graducaion</Label>
-                      <Input name="graduationDate" value={infoInput.education.graduationDate} onChange={(e) => handleInputArrayChange(e, "education")} id="graduation-year" type="number" placeholder="Año de Graducaion" />
+                      <Input name="graduationDate" value={infoInput.education.graduationDate} onChange={(e) => handleInputArrayChange(e, "education")} id="graduation-year" type="date" placeholder="Año de Graducaion" />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="education-location">Lugar</Label>
@@ -245,7 +252,7 @@ export function FormUser() {
                     </div>
                     <div className="space-y-2" title="Promedio de Calificaciones">
                       <Label htmlFor="gpa">GPA</Label>
-                      <Input name="gpa" value={infoInput.education.gpa} onChange={(e) => handleInputArrayChange(e, "education")} id="gpa" placeholder="(opcional)" />
+                      <Input name="gpa" value={infoInput.education.gpa} onChange={(e) => handleInputArrayChange(e, "education")} type="number" id="gpa" placeholder="(opcional)" />
                     </div>
                   </div>
                   <div className="grid grid-cols-3 gap-4">
