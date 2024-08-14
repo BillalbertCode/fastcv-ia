@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button"
 // Iconos
 import { ErrorIco, InfoIco, SaveIco, TrashIco } from "../resources/Icons"
 // Schema
-import { skillSchema, educationSchema } from "../schemas/userInfo.schema"
+import { skillSchema, educationSchema, experienceSchema, projectSchema, leadershipSchema } from "../schemas/userInfo.schema"
 
 
 export function FormUser() {
@@ -77,8 +77,7 @@ export function FormUser() {
     },
     projects: {
       name: '',
-      role: '',
-      link: '',
+      position: '',
       description: ''
     },
     leadershipAndActivities: {
@@ -110,6 +109,11 @@ export function FormUser() {
   const handleInputArrayChange = (e, objectKeyName) => {
     const { name, value } = e.target;
 
+    // Quitar estado de error del input
+    if (errorInput[objectKeyName]?.[name]) {
+      setErrorInput({ ...errorInput, [objectKeyName]: { ...errorInput[objectKeyName], [name]: null } })
+    }
+
     setInfoInput({
       ...infoInput,
       [objectKeyName]: { ...infoInput[objectKeyName], [name]: value }
@@ -119,9 +123,55 @@ export function FormUser() {
   // Manejador del evento de añadir 
   // Añade el array
   const handleAddArray = (arrayName) => {
-    console.log(educationSchema.parse(infoInput[arrayName]))
+
+    // Validacion con esquema zod  
+    const funValidation = schema => {
+      const { success, error } = schema.safeParse(infoInput[arrayName])
+      if (!success) {
+        const errorObject = Object.fromEntries(error.issues.map(({ path: [key], message }) => [key, message]))
+        setErrorInput({ ...errorInput, [arrayName]: errorObject })
+        return false
+      }
+      return true
+    }
+
+    // Asignacion del esquema a la funcion para la validación
+    switch (arrayName) {
+      case 'technicalSkills':
+        if (!funValidation(skillSchema)) {
+          return
+        }
+        break;
+      case 'education':
+        if (!funValidation(educationSchema)) {
+          return
+        }
+        break;
+      case 'experience':
+        if (!funValidation(experienceSchema)) {
+          return
+        }
+        break;
+      case 'projects':
+        if (!funValidation(projectSchema)) {
+          return
+        }
+        break;
+      case 'leadershipAndActivities':
+        if (!funValidation(leadershipSchema)) {
+          return
+        }
+        break;
+      default:
+        console.error('error inesperado')
+        break;
+    }
+
     setUser({ ...user, [arrayName]: [...user[arrayName], infoInput[arrayName]] });
-    
+
+    // Borramos los estados de error
+    setErrorInput({ ...errorInput, [arrayName]: {} });
+
     // Reseteamos los campos del formulario 
     setInfoInput({
       ...infoInput,
@@ -164,8 +214,12 @@ export function FormUser() {
               <label title="error message" htmlFor="firstName" className="text-red-500 ml-1 flex items-end justify-between"><p className="text-xs basis-4/5 ">Texto de ejemplo</p><ErrorIco /></label>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="lastName">Last Name</Label>
-              <Input name="lastName" value={user.personalInfo.lastName} onChange={(e) => handleInputChange(e, "personalInfo")} id="lastName" placeholder="Enter your last name" />
+              <Label htmlFor="lastName">Apellido</Label>
+              <Input name="lastName"
+                value={user.personalInfo.lastName}
+                onChange={(e) => handleInputChange(e, "personalInfo")}
+                id="lastName"
+                placeholder="Apellido" />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -187,7 +241,7 @@ export function FormUser() {
           <div>
             <Collapsible>
               <CollapsibleTrigger className="flex w-full items-center justify-between">
-                <div className="font-medium">Skills</div>
+                <div className="font-medium">Habilidades</div>
                 <ChevronDownIcon
                   className="h-5 w-5 transition-transform duration-300 [&[data-state=open]]:rotate-180" />
               </CollapsibleTrigger>
@@ -195,7 +249,20 @@ export function FormUser() {
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="mt-2">
-                      <Input name="name" value={infoInput.technicalSkills.name} onChange={(e) => handleInputArrayChange(e, "technicalSkills")} id="technicalSkills" placeholder="Nombre de la Habilidad" />
+                      <Input
+                        name="name"
+                        value={infoInput.technicalSkills.name}
+                        onChange={(e) => handleInputArrayChange(e, "technicalSkills")}
+                        id="technicalSkills"
+                        maxlength={20}
+                        className={errorInput.technicalSkills?.name && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        placeholder="Nombre de la Habilidad" />
+                      {errorInput.technicalSkills?.name &&
+                        <label title={errorInput.technicalSkills.name} htmlFor="technicalSkills" className="text-red-500 ml-1 flex items-end justify-between">
+                          <p className="text-xs basis-4/5 ">{errorInput.technicalSkills.name}</p>
+                          <ErrorIco />
+                        </label>
+                      }
                     </div>
                   </div>
                   {user.technicalSkills.length > 0 &&
@@ -230,43 +297,150 @@ export function FormUser() {
                   <div className="grid grid-cols-3 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="school">Institución</Label>
-                      <Input name="name" value={infoInput.education.name} onChange={(e) => handleInputArrayChange(e, "education")} id="school" placeholder="Institución" />
+                      <Input name="name"
+                        value={infoInput.education.name}
+                        onChange={(e) => handleInputArrayChange(e, "education")}
+                        maxlength={50}
+                        className={errorInput.education?.name && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        id="school"
+                        placeholder="Institución" />
+                      {errorInput.education?.name &&
+                        <label title={errorInput.education.name} htmlFor="school" className="text-red-500 ml-1 flex items-end justify-between">
+                          <p className="text-xs basis-4/5 ">{errorInput.education.name}</p>
+                          <ErrorIco />
+                        </label>
+                      }
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="degree">Título Académico</Label>
-                      <Input name="degree" value={infoInput.education.degree} onChange={(e) => handleInputArrayChange(e, "education")} id="degree" placeholder="Título Académico " />
+                      <Input name="degree"
+                        value={infoInput.education.degree}
+                        onChange={(e) => handleInputArrayChange(e, "education")}
+                        id="degree"
+                        maxlength={50}
+                        className={errorInput.education?.degree && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        placeholder="Título Académico " />
+                      {errorInput.education?.degree &&
+                        <label title={errorInput.education.degree} htmlFor="degree" className="text-red-500 ml-1 flex items-end justify-between">
+                          <p className="text-xs basis-4/5 ">{errorInput.education.degree}</p>
+                          <ErrorIco />
+                        </label>
+                      }
                     </div>
                     <div className="space-y-2" title="Área de estudio o Área de Concentracion">
                       <Label htmlFor="concentration">Área de Estudio</Label>
-                      <Input name="concentration" value={infoInput.education.concentration} onChange={(e) => handleInputArrayChange(e, "education")} id="concentration" placeholder="(opcional)" />
+                      <Input name="concentration"
+                        value={infoInput.education.concentration}
+                        onChange={(e) => handleInputArrayChange(e, "education")}
+                        id="concentration"
+                        maxlength={50}
+                        className={errorInput.education?.concentration && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        placeholder="(opcional)" />
+                      {errorInput.education?.concentration &&
+                        <label title={errorInput.education.concentration} htmlFor="concentration" className="text-red-500 ml-1 flex items-end justify-between">
+                          <p className="text-xs basis-4/5 ">{errorInput.education.concentration}</p>
+                          <ErrorIco />
+                        </label>
+                      }
                     </div>
                   </div>
                   <div className="grid grid-cols-3 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="graduation-year">Año de Graducaion</Label>
-                      <Input name="graduationDate" value={infoInput.education.graduationDate} onChange={(e) => handleInputArrayChange(e, "education")} id="graduation-year" type="date" placeholder="Año de Graducaion" />
+                      <Input name="graduationDate"
+                        value={infoInput.education.graduationDate}
+                        onChange={(e) => handleInputArrayChange(e, "education")}
+                        id="graduation-year"
+                        type="date"
+                        className={errorInput.education?.graduationDate && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        placeholder="Año de Graducaion" />
+                      {errorInput.education?.graduationDate &&
+                        <label title={errorInput.education.graduationDate} htmlFor="graduation-year" className="text-red-500 ml-1 flex items-end justify-between">
+                          <p className="text-xs basis-4/5 ">{errorInput.education.graduationDate}</p>
+                          <ErrorIco />
+                        </label>
+                      }
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="education-location">Lugar</Label>
-                      <Input name="location" value={infoInput.education.location} onChange={(e) => handleInputArrayChange(e, "education")} id="education-location" placeholder="Lugar" />
+                      <Input name="location"
+                        value={infoInput.education.location}
+                        onChange={(e) => handleInputArrayChange(e, "education")}
+                        id="education-location"
+                        maxlength={50}
+                        className={errorInput.education?.location && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        placeholder="Lugar" />
+                      {errorInput.education?.location &&
+                        <label title={errorInput.education.location} htmlFor="education-location" className="text-red-500 ml-1 flex items-end justify-between">
+                          <p className="text-xs basis-4/5 ">{errorInput.education.location}</p>
+                          <ErrorIco />
+                        </label>
+                      }
                     </div>
                     <div className="space-y-2" title="Promedio de Calificaciones">
                       <Label htmlFor="gpa">GPA</Label>
-                      <Input name="gpa" value={infoInput.education.gpa} onChange={(e) => handleInputArrayChange(e, "education")} type="number" id="gpa" placeholder="(opcional)" />
+                      <Input name="gpa"
+                        value={infoInput.education.gpa}
+                        onChange={(e) => handleInputArrayChange(e, "education")}
+                        type="number"
+                        maxlength={3}
+                        id="gpa"
+                        className={errorInput.education?.gpa && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        placeholder="(opcional)" />
+                      {errorInput.education?.gpa &&
+                        <label title={errorInput.education.gpa} htmlFor="gpa" className="text-red-500 ml-1 flex items-end justify-between">
+                          <p className="text-xs basis-4/5 ">{errorInput.education.gpa}</p>
+                          <ErrorIco />
+                        </label>
+                      }
                     </div>
                   </div>
                   <div className="grid grid-cols-3 gap-4">
                     <div className="space-y-2" title="Nombre de la tesis">
                       <Label htmlFor="education-thesis">Tesis</Label>
-                      <Input name="thesis" value={infoInput.education.thesis} onChange={(e) => handleInputArrayChange(e, "education")} id="education-thesis" placeholder="(opcional)" />
+                      <Input name="thesis"
+                        value={infoInput.education.thesis}
+                        onChange={(e) => handleInputArrayChange(e, "education")}
+                        id="education-thesis"
+                        maxlength={50}
+                        className={errorInput.education?.thesis && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        placeholder="(opcional)" />
+                      {errorInput.education?.thesis &&
+                        <label title={errorInput.education.thesis} htmlFor="education-thesis" className="text-red-500 ml-1 flex items-end justify-between">
+                          <p className="text-xs basis-4/5 ">{errorInput.education.thesis}</p>
+                          <ErrorIco />
+                        </label>
+                      }
                     </div>
                     <div className="space-y-2" title="Eventos relevantes en la institución como participaciones">
                       <Label htmlFor="education-relevantEvents">Eventos relevantes</Label>
-                      <Input name="relevantEvents" value={infoInput.education.relevantEvents} onChange={(e) => handleInputArrayChange(e, "education")} id="education-relevantEvents" placeholder="(opcional)" />
+                      <Input name="relevantEvents"
+                        value={infoInput.education.relevantEvents}
+                        onChange={(e) => handleInputArrayChange(e, "education")}
+                        id="education-relevantEvents"
+                        className={errorInput.education?.relevantEvents && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        placeholder="(opcional)" />
+                      {errorInput.education?.relevantEvents &&
+                        <label title={errorInput.education.relevantEvents} htmlFor="education-relevantEvents" className="text-red-500 ml-1 flex items-end justify-between">
+                          <p className="text-xs basis-4/5 ">{errorInput.education.relevantEvents}</p>
+                          <ErrorIco />
+                        </label>
+                      }
                     </div>
                     <div className="space-y-2" title="Cursos realizados en la institucion">
                       <Label htmlFor="education-courseWorks">Cursos</Label>
-                      <Input name="courseWorks" value={infoInput.education.courseWorks} onChange={(e) => handleInputArrayChange(e, "education")} id="education-courseWorks" placeholder="(opcional)" />
+                      <Input name="courseWorks"
+                        value={infoInput.education.courseWorks}
+                        onChange={(e) => handleInputArrayChange(e, "education")}
+                        id="education-courseWorks"
+                        className={errorInput.education?.courseWorks && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        placeholder="(opcional)" />
+                      {errorInput.education?.courseWorks &&
+                        <label title={errorInput.education.courseWorks} htmlFor="education-courseWorks" className="text-red-500 ml-1 flex items-end justify-between">
+                          <p className="text-xs basis-4/5 ">{errorInput.education.courseWorks}</p>
+                          <ErrorIco />
+                        </label>
+                      }
                     </div>
                   </div>
                   {/* Info Edcuacion del Usuario */}
@@ -318,25 +492,83 @@ export function FormUser() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="experience-company">Empresa o Organizacion</Label>
-                      <Input name="organization" value={infoInput.experience.organization} onChange={(e) => handleInputArrayChange(e, "experience")} id="experience-company" placeholder="Nombre la Organizacion/Empresa" />
+                      <Input name="organization"
+                        value={infoInput.experience.organization}
+                        onChange={(e) => handleInputArrayChange(e, "experience")}
+                        id="experience-company"
+                        maxlength={50}
+                        className={errorInput.experience?.organization && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        placeholder="Nombre la Organizacion/Empresa" />
+                      {errorInput.experience?.organization &&
+                        <label title={errorInput.experience.organization} htmlFor="experience-company" className="text-red-500 ml-1 flex items-end justify-between">
+                          <p className="text-xs basis-4/5 ">{errorInput.experience.organization}</p>
+                          <ErrorIco />
+                        </label>
+                      }
                     </div>
                     <div className="space-y-2" title="Que eras en el trabajo?">
                       <Label htmlFor="experience-position">Posición</Label>
-                      <Input name="position" value={infoInput.experience.position} onChange={(e) => handleInputArrayChange(e, "experience")} id="experience-position" placeholder="Título del empleo" />
+                      <Input name="position"
+                        value={infoInput.experience.position}
+                        onChange={(e) => handleInputArrayChange(e, "experience")}
+                        id="experience-position"
+                        maxlength={50}
+                        className={errorInput.experience?.position && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        placeholder="Título del empleo" />
+                      {errorInput.experience?.position &&
+                        <label title={errorInput.experience.position} htmlFor="experience-position" className="text-red-500 ml-1 flex items-end justify-between">
+                          <p className="text-xs basis-4/5 ">{errorInput.experience.position}</p>
+                          <ErrorIco />
+                        </label>
+                      }
                     </div>
                   </div>
                   <div className="grid grid-cols-3 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="experience-startDate">Fecha de Inicio</Label>
-                      <Input name="startDate" value={infoInput.experience.startDate} onChange={(e) => handleInputArrayChange(e, "experience")} id="experience-startDate" type="date" />
+                      <Input name="startDate"
+                        value={infoInput.experience.startDate}
+                        onChange={(e) => handleInputArrayChange(e, "experience")}
+                        id="experience-startDate"
+                        className={errorInput.experience?.startDate && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        type="date" />
+                      {errorInput.experience?.startDate &&
+                        <label title={errorInput.experience.startDate} htmlFor="experience-startDate" className="text-red-500 ml-1 flex items-end justify-between">
+                          <p className="text-xs basis-4/5 ">{errorInput.experience.startDate}</p>
+                          <ErrorIco />
+                        </label>
+                      }
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="experience-endDate">Fecha final </Label>
-                      <Input name="endDate" value={infoInput.experience.endDate} onChange={(e) => handleInputArrayChange(e, "experience")} id="experience-endDate" type="date" />
+                      <Input name="endDate"
+                        value={infoInput.experience.endDate}
+                        onChange={(e) => handleInputArrayChange(e, "experience")}
+                        id="experience-endDate"
+                        className={errorInput.experience?.endDate && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        type="date" />
+                      {errorInput.experience?.endDate &&
+                        <label title={errorInput.experience.endDate} htmlFor="experience-endDate" className="text-red-500 ml-1 flex items-end justify-between">
+                          <p className="text-xs basis-4/5 ">{errorInput.experience.endDate}</p>
+                          <ErrorIco />
+                        </label>
+                      }
                     </div>
                     <div className="space-y-2" title="Que eras en el trabajo?">
                       <Label htmlFor="experience-location">Lugar</Label>
-                      <Input name="location" value={infoInput.experience.location} onChange={(e) => handleInputArrayChange(e, "experience")} id="experience-location" placeholder="Lugar" />
+                      <Input name="location"
+                        value={infoInput.experience.location}
+                        onChange={(e) => handleInputArrayChange(e, "experience")}
+                        id="experience-location"
+                        maxlength={50}
+                        className={errorInput.experience?.location && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        placeholder="Lugar" />
+                      {errorInput.experience?.location &&
+                        <label title={errorInput.experience.location} htmlFor="experience-location" className="text-red-500 ml-1 flex items-end justify-between">
+                          <p className="text-xs basis-4/5 ">{errorInput.experience.location}</p>
+                          <ErrorIco />
+                        </label>
+                      }
                     </div>
                   </div>
                   <div className="space-y-2">
@@ -346,8 +578,15 @@ export function FormUser() {
                       name="description"
                       value={infoInput.experience.description}
                       onChange={(e) => handleInputArrayChange(e, "experience")}
+                      className={errorInput.experience?.description && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
                       placeholder="Descripción de lo que hiciste en la compañia"
                       rows={4} />
+                    {errorInput.experience?.description &&
+                      <label title={errorInput.experience.description} htmlFor="experience-description" className="text-red-500 ml-1 flex items-end justify-between">
+                        <p className="text-xs basis-4/5 ">{errorInput.experience.description}</p>
+                        <ErrorIco />
+                      </label>
+                    }
                   </div>
                   {user.experience.length > 0 &&
                     (
@@ -394,16 +633,52 @@ export function FormUser() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="project-name">Nombre del Proyecto</Label>
-                      <Input name="name" value={infoInput.projects.name} onChange={(e) => handleInputArrayChange(e, "projects")} id="project-name" placeholder="Nombre" />
+                      <Input name="name"
+                        value={infoInput.projects.name}
+                        onChange={(e) => handleInputArrayChange(e, "projects")}
+                        id="project-name"
+                        maxlength={50}
+                        className={errorInput.projects?.name && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        placeholder="Nombre" />
+                      {errorInput.projects?.name &&
+                        <label title={errorInput.projects.name} htmlFor="project-name" className="text-red-500 ml-1 flex items-end justify-between">
+                          <p className="text-xs basis-4/5 ">{errorInput.projects.name}</p>
+                          <ErrorIco />
+                        </label>
+                      }
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="project-role">Posición </Label>
-                      <Input name="role" value={infoInput.projects.role} onChange={(e) => handleInputArrayChange(e, "projects")} id="project-role" placeholder="Posición/Rol" />
+                      <Input name="position"
+                        value={infoInput.projects.position}
+                        onChange={(e) => handleInputArrayChange(e, "projects")}
+                        id="project-role"
+                        maxlength={50}
+                        className={errorInput.projects?.position && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        placeholder="Posición/Rol" />
+                      {errorInput.projects?.position &&
+                        <label title={errorInput.projects.position} htmlFor="project-role" className="text-red-500 ml-1 flex items-end justify-between">
+                          <p className="text-xs basis-4/5 ">{errorInput.projects.position}</p>
+                          <ErrorIco />
+                        </label>
+                      }
                     </div>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="project-description">Descripción</Label>
-                    <Textarea name="description" value={infoInput.projects.description} onChange={(e) => handleInputArrayChange(e, "projects")} id="project-description" placeholder="Descripcion del proyecto" rows={4} />
+                    <Textarea name="description"
+                      value={infoInput.projects.description}
+                      onChange={(e) => handleInputArrayChange(e, "projects")}
+                      id="project-description"
+                      placeholder="Descripcion del proyecto"
+                      className={errorInput.projects?.description && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                      rows={4} />
+                    {errorInput.projects?.description &&
+                      <label title={errorInput.projects.description} htmlFor="project-description" className="text-red-500 ml-1 flex items-end justify-between">
+                        <p className="text-xs basis-4/5 ">{errorInput.projects.description}</p>
+                        <ErrorIco />
+                      </label>
+                    }
                   </div>
                   {user.projects.length > 0 &&
                     (
@@ -446,26 +721,84 @@ export function FormUser() {
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2" title="Organización en la que participaste:">
-                      <Label htmlFor="leadershipAndActivities-organization">Organizacion</Label>
-                      <Input name="organization" value={infoInput.leadershipAndActivities.organization} onChange={(e) => handleInputArrayChange(e, "leadershipAndActivities")} id="leadershipAndActivities-organization" placeholder="Enter an organization" />
+                      <Label htmlFor="leadershipAndActivities-organization">Organización</Label>
+                      <Input name="organization"
+                        value={infoInput.leadershipAndActivities.organization}
+                        onChange={(e) => handleInputArrayChange(e, "leadershipAndActivities")}
+                        id="leadershipAndActivities-organization"
+                        maxlength={50}
+                        className={errorInput.leadershipAndActivities?.organization && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        placeholder="Organización" />
+                      {errorInput.leadershipAndActivities?.organization &&
+                        <label title={errorInput.leadershipAndActivities.organization} htmlFor="leadershipAndActivities-organization" className="text-red-500 ml-1 flex items-end justify-between">
+                          <p className="text-xs basis-4/5 ">{errorInput.leadershipAndActivities.organization}</p>
+                          <ErrorIco />
+                        </label>
+                      }
                     </div>
                     <div className="space-y-2" title="cual fue tu rol">
                       <Label htmlFor="leadershipAndActivities-position">Rol</Label>
-                      <Input name="role" value={infoInput.leadershipAndActivities.role} onChange={(e) => handleInputArrayChange(e, "leadershipAndActivities")} id="leadershipAndActivities-position" placeholder="Ingresa tu Rol" />
+                      <Input name="role"
+                        value={infoInput.leadershipAndActivities.role}
+                        onChange={(e) => handleInputArrayChange(e, "leadershipAndActivities")}
+                        id="leadershipAndActivities-position"
+                        maxlength={50}
+                        className={errorInput.leadershipAndActivities?.role && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        placeholder="Ingresa tu Rol" />
+                      {errorInput.leadershipAndActivities?.role &&
+                        <label title={errorInput.leadershipAndActivities.role} htmlFor="leadershipAndActivities-position" className="text-red-500 ml-1 flex items-end justify-between">
+                          <p className="text-xs basis-4/5 ">{errorInput.leadershipAndActivities.role}</p>
+                          <ErrorIco />
+                        </label>
+                      }
                     </div>
                   </div>
                   <div className="grid grid-cols-3 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="leadershipAndActivities-startDate">Fecha de Inicio</Label>
-                      <Input name="startDate" value={infoInput.leadershipAndActivities.startDate} onChange={(e) => handleInputArrayChange(e, "leadershipAndActivities")} id="leadershipAndActivities-startDate" type="date" />
+                      <Input name="startDate"
+                        value={infoInput.leadershipAndActivities.startDate}
+                        onChange={(e) => handleInputArrayChange(e, "leadershipAndActivities")}
+                        id="leadershipAndActivities-startDate"
+                        className={errorInput.leadershipAndActivities?.startDate && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        type="date" />
+                      {errorInput.leadershipAndActivities?.startDate &&
+                        <label title={errorInput.leadershipAndActivities.startDate} htmlFor="leadershipAndActivities-startDate" className="text-red-500 ml-1 flex items-end justify-between">
+                          <p className="text-xs basis-4/5 ">{errorInput.leadershipAndActivities.startDate}</p>
+                          <ErrorIco />
+                        </label>
+                      }
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="leadershipAndActivities-endDate">Fecha final </Label>
-                      <Input name="endDate" value={infoInput.leadershipAndActivities.endDate} onChange={(e) => handleInputArrayChange(e, "leadershipAndActivities")} id="leadershipAndActivitiesAndActivitiesAndActivities-endDate" type="date" />
+                      <Input name="endDate"
+                        value={infoInput.leadershipAndActivities.endDate}
+                        onChange={(e) => handleInputArrayChange(e, "leadershipAndActivities")}
+                        id="leadershipAndActivitiesAndActivitiesAndActivities-endDate"
+                        className={errorInput.leadershipAndActivities?.endDate && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        type="date" />
+                      {errorInput.leadershipAndActivities?.endDate &&
+                        <label title={errorInput.leadershipAndActivities.endDate} htmlFor="leadershipAndActivitiesAndActivitiesAndActivities-endDate" className="text-red-500 ml-1 flex items-end justify-between">
+                          <p className="text-xs basis-4/5 ">{errorInput.leadershipAndActivities.endDate}</p>
+                          <ErrorIco />
+                        </label>
+                      }
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="leadershipAndActivities-location">Lugar</Label>
-                      <Input name="location" value={infoInput.leadershipAndActivities.location} onChange={(e) => handleInputArrayChange(e, "leadershipAndActivities")} id="leadershipAndActivities-location" placeholder="Lugar" />
+                      <Input name="location"
+                        value={infoInput.leadershipAndActivities.location}
+                        onChange={(e) => handleInputArrayChange(e, "leadershipAndActivities")}
+                        id="leadershipAndActivities-location"
+                        maxlength={50}
+                        className={errorInput.leadershipAndActivities?.location && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        placeholder="Lugar" />
+                      {errorInput.leadershipAndActivities?.location &&
+                        <label title={errorInput.leadershipAndActivities.location} htmlFor="leadershipAndActivities-location" className="text-red-500 ml-1 flex items-end justify-between">
+                          <p className="text-xs basis-4/5 ">{errorInput.leadershipAndActivities.location}</p>
+                          <ErrorIco />
+                        </label>
+                      }
                     </div>
                   </div>
                   <div className="space-y-2">
@@ -475,8 +808,15 @@ export function FormUser() {
                       name="achievements"
                       value={infoInput.leadershipAndActivities.achievements}
                       onChange={(e) => handleInputArrayChange(e, "leadershipAndActivities")}
+                      className={errorInput.leadershipAndActivities?.achievements && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
                       placeholder="Describe lo que hiciste en este evento o los logros que obtuviste"
                       rows={4} />
+                    {errorInput.leadershipAndActivities?.achievements &&
+                      <label title={errorInput.leadershipAndActivities.achievements} htmlFor="leadershipAndActivities-achievements" className="text-red-500 ml-1 flex items-end justify-between">
+                        <p className="text-xs basis-4/5 ">{errorInput.leadershipAndActivities.achievements}</p>
+                        <ErrorIco />
+                      </label>
+                    }
                   </div>
                   {user.leadershipAndActivities.length > 0 &&
                     (
@@ -491,7 +831,7 @@ export function FormUser() {
                             <CollapsibleContent>
                               <div className="py-1 text-sm">
                                 <div className="py-1 grid grid-cols-2"><span className="font-semibold">Organización: </span>{leadership.organization} </div>
-                                <div className="py-1 grid grid-cols-2"><span className="font-semibold">Posición/Rol: </span>{leadership.position}</div>
+                                <div className="py-1 grid grid-cols-2"><span className="font-semibold">Posición/Rol: </span>{leadership.role}</div>
                                 <div className="py-1 grid grid-cols-2"><span className="font-semibold">Lugar: </span>{leadership.location}</div>
                                 <div className="py-1 grid grid-cols-2"><span className="font-semibold">Fecha de inicio: </span>{leadership.startDate}</div>
                                 <div className="py-1 grid grid-cols-2"><span className="font-semibold">Fecha de finalización </span>{leadership.endDate}</div>

@@ -22,9 +22,9 @@ export const skillSchema = z.object({
 export const educationSchema = z.object({
     name: z.string().min(1, { message: requeridoMsg }).max(50, { message: requeridoMsgMax(50) }),
     location: z.string().min(1, { message: requeridoMsg }).max(50, { message: requeridoMsgMax(50) }),
-    degree: z.string().min(10, { message: 'El Título Académico debe tener un mínimo de 10 caracteres' }).max(50, { message: requeridoMsgMax(50) }),
-    concentration: z.string().min(10, { message: 'La Área de Estudio debe tener un mínimo de 10 caracteres' }).max(50, { message: requeridoMsgMax(50) }),
-    graduationDate: z.string().date({ message: 'Ingresa una fecha valida' }),
+    degree: z.string().min(1, { message: requeridoMsg }).max(50, { message: requeridoMsgMax(50) }),
+    concentration: z.string().min(1, { message: requeridoMsg }).max(50, { message: requeridoMsgMax(50) }),
+    graduationDate: z.string().date('Ingresa una fecha valida'),
     gpa: z.string().max(3, { message: requeridoMsgMax(50) }).optional(),
     thesis: z.string().max(50, { message: requeridoMsgMax(50) }).optional(),
     relevantEvents: z.string().max(300, { message: requeridoMsgMax(300) }).optional(),
@@ -34,10 +34,10 @@ export const educationSchema = z.object({
 export const experienceSchema = z.object({
     organization: z.string().min(1, { message: requeridoMsg }).max(50, { message: requeridoMsgMax(50) }),
     location: z.string().min(1, { message: requeridoMsg }).max(50, { message: requeridoMsgMax(50) }),
-    position: z.string().min(1, { message: requeridoMsg }).max({ message: requeridoMsgMax(50) }),
-    startDate: z.string().date({ message: 'Ingresa una fecha valida' }),
-    endDate: z.string().date({ message: 'Ingresa una fecha valida' }),
-    description: z.string().min(10, { message: 'La descripción debe tener un mínimo de 10 caracteres' }).max(500, { message: requeridoMsgMax(500) })
+    position: z.string().min(1, { message: requeridoMsg }).max(50, { message: requeridoMsgMax(50) }),
+    startDate: z.string().date('Ingresa una fecha valida'),
+    endDate: z.string().date('Ingresa una fecha valida'),
+    description: z.string().min(10, { message: 'Mínimo de 10 caracteres' }).max(500, { message: requeridoMsgMax(500) })
 })
 
 export const projectSchema = z.object({
@@ -49,8 +49,8 @@ export const projectSchema = z.object({
 export const leadershipSchema = z.object({
     organization: z.string().min(1, { message: requeridoMsg }).max(50, { message: requeridoMsgMax(50) }),
     role: z.string().min(1, { message: requeridoMsg }).max(50, { message: requeridoMsgMax(50) }),
-    location: z.string().min(1, {message: requeridoMsg}).max(50, {message: requeridoMsgMax(50)}),
-    startDate: z.string().date({ message: 'Ingresa una fecha valida' }),
-    endDate: z.string().date({ message: 'Ingresa una fecha valida' }),
-    achievements: z.string().min(10,{message: 'Mínimo 10 caracteres'}).max(500, requeridoMsgMax(500))
+    location: z.string().min(1, { message: requeridoMsg }).max(50, { message: requeridoMsgMax(50) }),
+    startDate: z.string().date('Ingresa una fecha valida'),
+    endDate: z.string().date('Ingresa una fecha valida'),
+    achievements: z.string().min(10, { message: 'Mínimo 10 caracteres' }).max(500, requeridoMsgMax(500))
 })
