@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button"
 // Iconos
 import { ErrorIco, InfoIco, SaveIco, TrashIco } from "../resources/Icons"
 // Schema
-import { skillSchema, educationSchema, experienceSchema, projectSchema, leadershipSchema } from "../schemas/userInfo.schema"
+import { skillSchema, educationSchema, experienceSchema, projectSchema, leadershipSchema, userInfoSchema } from "../schemas/userInfo.schema"
 
 
 export function FormUser() {
@@ -93,9 +93,24 @@ export function FormUser() {
   // Manejo de Errores de los inputs
   const [errorInput, setErrorInput] = useState({})
 
+
   // control de inputs directos
   const handleInputChange = (e, objectKeyName) => {
     const { name, value } = e.target;
+
+    // Eliminar error cuando se presione una tecla, si es que el error existe
+    if (errorInput.user?.[objectKeyName]?.[name]) {
+      setErrorInput({
+        ...errorInput,
+        user: {
+          ...errorInput.user,
+          [objectKeyName]: {
+            ...errorInput.user[objectKeyName],
+            [name]: null
+          }
+        }
+      });
+    }
 
     setUser({
       ...user,
@@ -189,6 +204,30 @@ export function FormUser() {
 
   // Guardar informacion del usuario
   const saveInfoUser = () => {
+
+    // Funcion recursiva para asignar los errores
+    const { success, error } = userInfoSchema.safeParse(user)
+    if (!success) {
+      const errorObject = {};
+      error.issues.forEach((issue) => {
+        const path = issue.path;
+        const message = issue.message;
+        let current = errorObject;
+        for (let i = 0; i < path.length - 1; i++) {
+          const key = path[i];
+          if (!current[key]) {
+            current[key] = {};
+          }
+          current = current[key];
+        }
+        current[path[path.length - 1]] = message;
+      });
+      setErrorInput({ ...errorInput, user: errorObject });
+      console.log(success)
+      console.log(error.issues)
+      return
+    }
+
     localStorage.setItem("user", JSON.stringify(user));
   };
 
@@ -203,15 +242,18 @@ export function FormUser() {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
               <Label htmlFor="firstName" >Nombre</Label>
-              {/* <Input name="name" value={user.personalInfo.name} onChange={(e) => handleInputChange(e, "personalInfo")} id="firstName" placeholder="Nombre" /> */}
-              <Input
-                name="name"
+              <Input name="name"
                 value={user.personalInfo.name}
                 onChange={(e) => handleInputChange(e, "personalInfo")}
-                className="text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"
                 id="firstName"
+                className={errorInput.user?.personalInfo?.name && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
                 placeholder="Nombre" />
-              <label title="error message" htmlFor="firstName" className="text-red-500 ml-1 flex items-end justify-between"><p className="text-xs basis-4/5 ">Texto de ejemplo</p><ErrorIco /></label>
+              {errorInput.user?.personalInfo?.name &&
+                <label title={errorInput.user.personalInfo.name} htmlFor="firstName" className="text-red-500 ml-1 flex items-end justify-between">
+                  <p className="text-xs basis-4/5 ">{errorInput.user.personalInfo.name}</p>
+                  <ErrorIco />
+                </label>
+              }
             </div>
             <div className="space-y-2">
               <Label htmlFor="lastName">Apellido</Label>
@@ -219,22 +261,65 @@ export function FormUser() {
                 value={user.personalInfo.lastName}
                 onChange={(e) => handleInputChange(e, "personalInfo")}
                 id="lastName"
+                className={errorInput.user?.personalInfo?.lastName && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
                 placeholder="Apellido" />
+              {errorInput.user?.personalInfo?.lastName &&
+                <label title={errorInput.user.personalInfo.lastName} htmlFor="lastName" className="text-red-500 ml-1 flex items-end justify-between">
+                  <p className="text-xs basis-4/5 ">{errorInput.user.personalInfo.lastName}</p>
+                  <ErrorIco />
+                </label>
+              }
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input name="email" value={user.personalInfo.email} onChange={(e) => handleInputChange(e, "personalInfo")} type="email" id="email" placeholder="Email" />
+              <Input name="email"
+                value={user.personalInfo.email}
+                onChange={(e) => handleInputChange(e, "personalInfo")}
+                type="email"
+                id="email"
+                className={errorInput.user?.personalInfo?.email && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                placeholder="Email" />
+              {errorInput.user?.personalInfo?.email &&
+                <label title={errorInput.user.personalInfo.email} htmlFor="email" className="text-red-500 ml-1 flex items-end justify-between">
+                  <p className="text-xs basis-4/5 ">{errorInput.user.personalInfo.email}</p>
+                  <ErrorIco />
+                </label>
+              }
             </div>
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone</Label>
-              <Input name="phone" value={user.personalInfo.phone} onChange={(e) => handleInputChange(e, "personalInfo")} id="phone" placeholder="Enter your phone number" />
+              <Label htmlFor="phone">Teléfono</Label>
+              <Input name="phone"
+                value={user.personalInfo.phone}
+                onChange={(e) => handleInputChange(e, "personalInfo")}
+                id="phone"
+                className={errorInput.user?.personalInfo?.phone && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                placeholder="Teléfono" />
+              {errorInput.user?.personalInfo?.phone &&
+                <label title={errorInput.user.personalInfo.phone} htmlFor="phone" className="text-red-500 ml-1 flex items-end justify-between">
+                  <p className="text-xs basis-4/5 ">{errorInput.user.personalInfo.phone}</p>
+                  <ErrorIco />
+                </label>
+              }
+
             </div>
           </div>
           <div className="space-y-2">
             <Label htmlFor="description">Description</Label>
-            <Textarea name="description" value={user.personalInfo.description} onChange={(e) => handleInputChange(e, "personalInfo")} id="description" placeholder="Describe yourself" rows={3} />
+            <Textarea name="description"
+              value={user.personalInfo.description}
+              onChange={(e) => handleInputChange(e, "personalInfo")}
+              id="description"
+              className={errorInput.user?.personalInfo?.description && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+              placeholder="Describe yourself"
+              rows={3} />
+            {errorInput.user?.personalInfo?.description &&
+              <label title={errorInput.user.personalInfo.description} htmlFor="description" className="text-red-500 ml-1 flex items-end justify-between">
+                <p className="text-xs basis-4/5 ">{errorInput.user.personalInfo.description}</p>
+                <ErrorIco />
+              </label>
+            }
           </div>
 
           <Separator />
@@ -254,7 +339,7 @@ export function FormUser() {
                         value={infoInput.technicalSkills.name}
                         onChange={(e) => handleInputArrayChange(e, "technicalSkills")}
                         id="technicalSkills"
-                        maxlength={20}
+                        maxLength={20}
                         className={errorInput.technicalSkills?.name && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
                         placeholder="Nombre de la Habilidad" />
                       {errorInput.technicalSkills?.name &&
@@ -288,7 +373,7 @@ export function FormUser() {
           <div>
             <Collapsible>
               <CollapsibleTrigger className="flex w-full items-center justify-between">
-                <div className="font-medium">Educación</div>
+                <div className="font-medium">Educación <p className="text-sm text-red-500">{errorInput.user?.education}</p></div>
                 <ChevronDownIcon
                   className="h-5 w-5 transition-transform duration-300 [&[data-state=open]]:rotate-180" />
               </CollapsibleTrigger>
@@ -300,7 +385,7 @@ export function FormUser() {
                       <Input name="name"
                         value={infoInput.education.name}
                         onChange={(e) => handleInputArrayChange(e, "education")}
-                        maxlength={50}
+                        maxLength={50}
                         className={errorInput.education?.name && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
                         id="school"
                         placeholder="Institución" />
@@ -317,7 +402,7 @@ export function FormUser() {
                         value={infoInput.education.degree}
                         onChange={(e) => handleInputArrayChange(e, "education")}
                         id="degree"
-                        maxlength={50}
+                        maxLength={50}
                         className={errorInput.education?.degree && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
                         placeholder="Título Académico " />
                       {errorInput.education?.degree &&
@@ -333,7 +418,7 @@ export function FormUser() {
                         value={infoInput.education.concentration}
                         onChange={(e) => handleInputArrayChange(e, "education")}
                         id="concentration"
-                        maxlength={50}
+                        maxLength={50}
                         className={errorInput.education?.concentration && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
                         placeholder="(opcional)" />
                       {errorInput.education?.concentration &&
@@ -367,7 +452,7 @@ export function FormUser() {
                         value={infoInput.education.location}
                         onChange={(e) => handleInputArrayChange(e, "education")}
                         id="education-location"
-                        maxlength={50}
+                        maxLength={50}
                         className={errorInput.education?.location && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
                         placeholder="Lugar" />
                       {errorInput.education?.location &&
@@ -383,7 +468,7 @@ export function FormUser() {
                         value={infoInput.education.gpa}
                         onChange={(e) => handleInputArrayChange(e, "education")}
                         type="number"
-                        maxlength={3}
+                        maxLength={3}
                         id="gpa"
                         className={errorInput.education?.gpa && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
                         placeholder="(opcional)" />
@@ -402,7 +487,7 @@ export function FormUser() {
                         value={infoInput.education.thesis}
                         onChange={(e) => handleInputArrayChange(e, "education")}
                         id="education-thesis"
-                        maxlength={50}
+                        maxLength={50}
                         className={errorInput.education?.thesis && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
                         placeholder="(opcional)" />
                       {errorInput.education?.thesis &&
@@ -496,7 +581,7 @@ export function FormUser() {
                         value={infoInput.experience.organization}
                         onChange={(e) => handleInputArrayChange(e, "experience")}
                         id="experience-company"
-                        maxlength={50}
+                        maxLength={50}
                         className={errorInput.experience?.organization && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
                         placeholder="Nombre la Organizacion/Empresa" />
                       {errorInput.experience?.organization &&
@@ -512,7 +597,7 @@ export function FormUser() {
                         value={infoInput.experience.position}
                         onChange={(e) => handleInputArrayChange(e, "experience")}
                         id="experience-position"
-                        maxlength={50}
+                        maxLength={50}
                         className={errorInput.experience?.position && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
                         placeholder="Título del empleo" />
                       {errorInput.experience?.position &&
@@ -560,7 +645,7 @@ export function FormUser() {
                         value={infoInput.experience.location}
                         onChange={(e) => handleInputArrayChange(e, "experience")}
                         id="experience-location"
-                        maxlength={50}
+                        maxLength={50}
                         className={errorInput.experience?.location && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
                         placeholder="Lugar" />
                       {errorInput.experience?.location &&
@@ -637,7 +722,7 @@ export function FormUser() {
                         value={infoInput.projects.name}
                         onChange={(e) => handleInputArrayChange(e, "projects")}
                         id="project-name"
-                        maxlength={50}
+                        maxLength={50}
                         className={errorInput.projects?.name && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
                         placeholder="Nombre" />
                       {errorInput.projects?.name &&
@@ -653,7 +738,7 @@ export function FormUser() {
                         value={infoInput.projects.position}
                         onChange={(e) => handleInputArrayChange(e, "projects")}
                         id="project-role"
-                        maxlength={50}
+                        maxLength={50}
                         className={errorInput.projects?.position && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
                         placeholder="Posición/Rol" />
                       {errorInput.projects?.position &&
@@ -726,7 +811,7 @@ export function FormUser() {
                         value={infoInput.leadershipAndActivities.organization}
                         onChange={(e) => handleInputArrayChange(e, "leadershipAndActivities")}
                         id="leadershipAndActivities-organization"
-                        maxlength={50}
+                        maxLength={50}
                         className={errorInput.leadershipAndActivities?.organization && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
                         placeholder="Organización" />
                       {errorInput.leadershipAndActivities?.organization &&
@@ -742,7 +827,7 @@ export function FormUser() {
                         value={infoInput.leadershipAndActivities.role}
                         onChange={(e) => handleInputArrayChange(e, "leadershipAndActivities")}
                         id="leadershipAndActivities-position"
-                        maxlength={50}
+                        maxLength={50}
                         className={errorInput.leadershipAndActivities?.role && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
                         placeholder="Ingresa tu Rol" />
                       {errorInput.leadershipAndActivities?.role &&
@@ -790,7 +875,7 @@ export function FormUser() {
                         value={infoInput.leadershipAndActivities.location}
                         onChange={(e) => handleInputArrayChange(e, "leadershipAndActivities")}
                         id="leadershipAndActivities-location"
-                        maxlength={50}
+                        maxLength={50}
                         className={errorInput.leadershipAndActivities?.location && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
                         placeholder="Lugar" />
                       {errorInput.leadershipAndActivities?.location &&

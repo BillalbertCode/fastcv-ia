@@ -5,16 +5,6 @@ import { z } from "zod";
 const requeridoMsg = 'Este campo es requerido'
 const requeridoMsgMax = numbermax => `Máximo ${numbermax} caracteres`
 
-export const userInfoSchema = z.object({
-    personalInfo: z.object({
-        name: z.string().min(1, { message: requeridoMsg }).max(50, { message: requeridoMsgMax(50) }),
-        lastName: z.string().min(1, { message: requeridoMsg }).max(50, { message: requeridoMsgMax(50) }),
-        phone: z.string().min(1, { message: requeridoMsg }).regex(/^(\+?\d{1,3})?[-. ]?(\d{3,12})$/, { message: 'Ingresa un numero de telefono valido' }),
-        email: z.string().min(1, { message: requeridoMsg }).email({ message: 'Ingresa un email valido' }),
-        description: z.string().min(10, { message: 'La descripcion debe tener al menos 10 caracteres' }).max(500, { message: requeridoMsgMax(500) })
-    })
-})
-
 export const skillSchema = z.object({
     name: z.string().min(1, { message: requeridoMsg }).max(20, { message: requeridoMsgMax(20) }),
 })
@@ -37,13 +27,13 @@ export const experienceSchema = z.object({
     position: z.string().min(1, { message: requeridoMsg }).max(50, { message: requeridoMsgMax(50) }),
     startDate: z.string().date('Ingresa una fecha valida'),
     endDate: z.string().date('Ingresa una fecha valida'),
-    description: z.string().min(10, { message: 'Mínimo de 10 caracteres' }).max(500, { message: requeridoMsgMax(500) })
+    description: z.string().min(10, { message: 'Mínimo de 10 caracteres' }).max(1000, { message: requeridoMsgMax(1000) })
 })
 
 export const projectSchema = z.object({
     name: z.string().min(1, { message: requeridoMsg }).max(50, { message: requeridoMsgMax(50) }),
     position: z.string().min(1, { message: requeridoMsg }).max(50, { message: requeridoMsgMax(50) }),
-    description: z.string().min(10, { message: 'Mínimo 10 caracteres' }).max(500, { message: requeridoMsgMax(500) })
+    description: z.string().min(10, { message: 'Mínimo 10 caracteres' }).max(1100, { message: requeridoMsgMax(1100) })
 })
 
 export const leadershipSchema = z.object({
@@ -52,5 +42,20 @@ export const leadershipSchema = z.object({
     location: z.string().min(1, { message: requeridoMsg }).max(50, { message: requeridoMsgMax(50) }),
     startDate: z.string().date('Ingresa una fecha valida'),
     endDate: z.string().date('Ingresa una fecha valida'),
-    achievements: z.string().min(10, { message: 'Mínimo 10 caracteres' }).max(500, requeridoMsgMax(500))
+    achievements: z.string().min(10, { message: 'Mínimo 10 caracteres' }).max(1100, requeridoMsgMax(1100))
+})
+
+export const userInfoSchema = z.object({
+    personalInfo: z.object({
+        name: z.string().min(1, { message: requeridoMsg }).max(50, { message: requeridoMsgMax(50) }),
+        lastName: z.string().min(1, { message: requeridoMsg }).max(50, { message: requeridoMsgMax(50) }),
+        phone: z.string().min(1, { message: requeridoMsg }).regex(/^(\+?\d{1,3})?[-. ]?(\d{3,12})$/, { message: 'Ingresa un numero de telefono valido' }),
+        email: z.string().min(1, { message: requeridoMsg }).email({ message: 'Ingresa un email valido' }),
+        description: z.string().min(10, { message: 'Mpinimo 10 caracteres' }).max(1100, { message: requeridoMsgMax(1100) })
+    }),
+    technicalSkills: skillSchema.array().optional(),
+    education: educationSchema.array().nonempty({message: requeridoMsg}),
+    experience: experienceSchema.array().optional(),
+    projects: projectSchema.array().optional(),
+    leadership: leadershipSchema.array().optional()
 })
