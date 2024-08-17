@@ -47,3 +47,6 @@ p {
 .text-foreground {
     color: var(--foreground);
 }
+  input {
+    color-scheme: dark;
+  }

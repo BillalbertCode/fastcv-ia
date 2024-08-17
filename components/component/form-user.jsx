@@ -141,12 +141,17 @@ export function FormUser() {
 
     // Validacion con esquema zod  
     const funValidation = schema => {
-      const { success, error } = schema.safeParse(infoInput[arrayName])
+      // Validamos el esquema
+      const { success, error, data } = schema.safeParse(infoInput[arrayName])
       if (!success) {
+        // Controlamos el error
         const errorObject = Object.fromEntries(error.issues.map(({ path: [key], message }) => [key, message]))
         setErrorInput({ ...errorInput, [arrayName]: errorObject })
         return false
       }
+
+      // Asignamos los Datos
+      setUser({ ...user, [arrayName]: [...user[arrayName], data] });
       return true
     }
 
@@ -181,8 +186,6 @@ export function FormUser() {
         console.error('error inesperado')
         break;
     }
-
-    setUser({ ...user, [arrayName]: [...user[arrayName], infoInput[arrayName]] });
 
     // Borramos los estados de error
     setErrorInput({ ...errorInput, [arrayName]: {} });
@@ -222,14 +225,20 @@ export function FormUser() {
         }
         current[path[path.length - 1]] = message;
       });
+
       setErrorInput({ ...errorInput, user: errorObject });
-      console.log(success)
-      console.log(error.issues)
       return
     }
 
     localStorage.setItem("user", JSON.stringify(user));
   };
+
+  const dateToday = () => {
+    const today = new Date()
+    const maxDate = today.toISOString().split('T')[0];
+    return maxDate
+  }
+
 
   return (
     (<Card className="w-full max-w-3xl">
@@ -437,6 +446,7 @@ export function FormUser() {
                         onChange={(e) => handleInputArrayChange(e, "education")}
                         id="graduation-year"
                         type="date"
+                        min="1900-01-01"
                         className={errorInput.education?.graduationDate && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
                         placeholder="Año de Graducaion" />
                       {errorInput.education?.graduationDate &&
@@ -616,7 +626,10 @@ export function FormUser() {
                         onChange={(e) => handleInputArrayChange(e, "experience")}
                         id="experience-startDate"
                         className={errorInput.experience?.startDate && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
-                        type="date" />
+                        type="date"
+                        min="1900-01-01"
+                        max={dateToday()}
+                      />
                       {errorInput.experience?.startDate &&
                         <label title={errorInput.experience.startDate} htmlFor="experience-startDate" className="text-red-500 ml-1 flex items-end justify-between">
                           <p className="text-xs basis-4/5 ">{errorInput.experience.startDate}</p>
@@ -631,7 +644,9 @@ export function FormUser() {
                         onChange={(e) => handleInputArrayChange(e, "experience")}
                         id="experience-endDate"
                         className={errorInput.experience?.endDate && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
-                        type="date" />
+                        type="date"
+                        min="1900-01-01"
+                        max={dateToday()} />
                       {errorInput.experience?.endDate &&
                         <label title={errorInput.experience.endDate} htmlFor="experience-endDate" className="text-red-500 ml-1 flex items-end justify-between">
                           <p className="text-xs basis-4/5 ">{errorInput.experience.endDate}</p>
@@ -846,7 +861,9 @@ export function FormUser() {
                         onChange={(e) => handleInputArrayChange(e, "leadershipAndActivities")}
                         id="leadershipAndActivities-startDate"
                         className={errorInput.leadershipAndActivities?.startDate && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
-                        type="date" />
+                        type="date"
+                        min="1900-01-01"
+                        max={dateToday()} />
                       {errorInput.leadershipAndActivities?.startDate &&
                         <label title={errorInput.leadershipAndActivities.startDate} htmlFor="leadershipAndActivities-startDate" className="text-red-500 ml-1 flex items-end justify-between">
                           <p className="text-xs basis-4/5 ">{errorInput.leadershipAndActivities.startDate}</p>
@@ -861,7 +878,9 @@ export function FormUser() {
                         onChange={(e) => handleInputArrayChange(e, "leadershipAndActivities")}
                         id="leadershipAndActivitiesAndActivitiesAndActivities-endDate"
                         className={errorInput.leadershipAndActivities?.endDate && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
-                        type="date" />
+                        type="date"
+                        min="1900-01-01"
+                        max={dateToday()} />
                       {errorInput.leadershipAndActivities?.endDate &&
                         <label title={errorInput.leadershipAndActivities.endDate} htmlFor="leadershipAndActivitiesAndActivitiesAndActivities-endDate" className="text-red-500 ml-1 flex items-end justify-between">
                           <p className="text-xs basis-4/5 ">{errorInput.leadershipAndActivities.endDate}</p>
