@@ -207,9 +207,13 @@ export function FormUser() {
 
   // Guardar informacion del usuario
   const saveInfoUser = () => {
+    debugger
+    console.log(user)
 
     // Funcion recursiva para asignar los errores
     const { success, error } = userInfoSchema.safeParse(user)
+    console.log(success)
+    console.log(error?.issues)
     if (!success) {
       const errorObject = {};
       // Recorremos los datos del objeto ZodError para agregarlo al inputError
@@ -231,7 +235,7 @@ export function FormUser() {
       setErrorInput({ ...errorInput, user: errorObject });
       return
     }
-
+    console.log(user)
     localStorage.setItem("user", JSON.stringify(user));
   };
 
