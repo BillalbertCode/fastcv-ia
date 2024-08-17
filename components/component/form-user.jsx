@@ -212,6 +212,8 @@ export function FormUser() {
     const { success, error } = userInfoSchema.safeParse(user)
     if (!success) {
       const errorObject = {};
+      // Recorremos los datos del objeto ZodError para agregarlo al inputError
+      // Asigna las validaciones para que sea facil de acceder
       error.issues.forEach((issue) => {
         const path = issue.path;
         const message = issue.message;

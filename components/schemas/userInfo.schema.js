@@ -9,6 +9,7 @@ const requeridoMsgMax = numbermax => `Máximo ${numbermax} caracteres`
 // Formateo de el string Si la fecha es la del dia de hoy.
 const endDate = z.string().date('Ingresa una fecha valida');
 
+// Recive como value una cadena ejemplo: "2024-08-16" de ahi encuentra los datos
 const parsedEndDate = endDate.transform((value, ctx) => {
   const dateParts = value.split('-');
   const date = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
