@@ -11,7 +11,7 @@ import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/component
 import { Button } from "@/components/ui/button"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectItem } from "@/components/ui/select"
 // Iconos
-import { ErrorIco, InfoIco, SaveIco, TrashIco } from "../resources/Icons"
+import { CheckIco, ErrorIco, InfoIco, SaveIco, TrashIco } from "../resources/Icons"
 // Schema
 import { skillSchema, educationSchema, experienceSchema, projectSchema, leadershipSchema, userInfoSchema } from "../schemas/userInfo.schema"
 import { phoneCountrys } from "@/utils/phoneCountrys"
@@ -96,6 +96,10 @@ export function FormUser() {
   // Manejo de Errores de los inputs
   const [errorInput, setErrorInput] = useState({})
 
+  // Guardar la informacion en cache
+  const [loading, setLoading] = useState(false)
+
+  const [success, setSuccess] = useState()
 
   // control de inputs directos
   const handleInputChange = (e, objectKeyName) => {
@@ -209,7 +213,8 @@ export function FormUser() {
   }
 
   // Guardar informacion del usuario
-  const saveInfoUser = () => {
+  const saveInfoUser = async () => {
+    setLoading(true);
     // Funcion recursiva para asignar los errores
     const { success, error } = userInfoSchema.safeParse(user)
     if (!success) {
@@ -231,11 +236,26 @@ export function FormUser() {
       });
 
       setErrorInput({ ...errorInput, user: errorObject });
+      setLoading(false);
       return
     }
     // vaciamos los errores
     setErrorInput({})
-    localStorage.setItem("user", JSON.stringify(user));
+
+    try {
+      // Intentamos guardar la informacion en cache
+      const userString = JSON.stringify(user)
+      localStorage.setItem("user", userString)
+
+      setSuccess(true); // Mostrar mensaje de éxito
+      setTimeout(() => {
+        setSuccess(false); // Borrar mensaje de éxito después de 5 segundos
+      }, 5000);
+    } catch (error) {
+      console.error("Error al guardar la información:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const dateToday = () => {
@@ -260,25 +280,25 @@ export function FormUser() {
                 value={user.personalInfo.name}
                 onChange={(e) => handleInputChange(e, "personalInfo")}
                 id="firstName"
-                className={errorInput.user?.personalInfo?.name && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                className={errorInput.user?.personalInfo?.name && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500 error-input-vibration"}
                 placeholder="Nombre" />
               {errorInput.user?.personalInfo?.name &&
-                <label title={errorInput.user.personalInfo.name} htmlFor="firstName" className="text-red-500 ml-1 flex items-end justify-between">
+                <label title={errorInput.user.personalInfo.name} htmlFor="firstName" className="text-red-500 ml-1 flex items-end justify-between error-message-vibration">
                   <p className="text-xs basis-4/5 ">{errorInput.user.personalInfo.name}</p>
                   <ErrorIco />
                 </label>
               }
             </div>
-            <div className="space-y-2">
+            <div className="space-y-1">
               <Label htmlFor="lastName">Apellido</Label>
               <Input name="lastName"
                 value={user.personalInfo.lastName}
                 onChange={(e) => handleInputChange(e, "personalInfo")}
                 id="lastName"
-                className={errorInput.user?.personalInfo?.lastName && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                className={errorInput.user?.personalInfo?.lastName && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500 error-input-vibration"}
                 placeholder="Apellido" />
               {errorInput.user?.personalInfo?.lastName &&
-                <label title={errorInput.user.personalInfo.lastName} htmlFor="lastName" className="text-red-500 ml-1 flex items-end justify-between">
+                <label title={errorInput.user.personalInfo.lastName} htmlFor="lastName" className="text-red-500 ml-1 flex items-end justify-between error-message-vibration">
                   <p className="text-xs basis-4/5 ">{errorInput.user.personalInfo.lastName}</p>
                   <ErrorIco />
                 </label>
@@ -293,10 +313,10 @@ export function FormUser() {
                 onChange={(e) => handleInputChange(e, "personalInfo")}
                 type="email"
                 id="email"
-                className={errorInput.user?.personalInfo?.email && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                className={errorInput.user?.personalInfo?.email && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500 error-input-vibration"}
                 placeholder="Email" />
               {errorInput.user?.personalInfo?.email &&
-                <label title={errorInput.user.personalInfo.email} htmlFor="email" className="text-red-500 ml-1 flex items-end justify-between">
+                <label title={errorInput.user.personalInfo.email} htmlFor="email" className="text-red-500 ml-1 flex items-end justify-between error-message-vibration">
                   <p className="text-xs basis-4/5 ">{errorInput.user.personalInfo.email}</p>
                   <ErrorIco />
                 </label>
@@ -348,15 +368,15 @@ export function FormUser() {
                 <Input id="phoneNumber"
                   value={user.personalInfo.phoneNumber}
                   onChange={(e) => handleInputChange(e, "personalInfo")}
-                  className={errorInput.user?.personalInfo?.phone && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                  className={errorInput.user?.personalInfo?.phone || errorInput.user?.personalInfo?.phoneNumber && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500 error-input-vibration"}
                   name="phoneNumber"
                   type="tel"
                   placeholder="Teléfono" />
               </div>
 
-              {errorInput.user?.personalInfo?.phone &&
-                <label title={errorInput.user.personalInfo.phone} htmlFor="phone" className="text-red-500 ml-1 flex items-end justify-between">
-                  <p className="text-xs basis-4/5 ">{errorInput.user.personalInfo.phone}</p>
+              {errorInput.user?.personalInfo?.phone || errorInput.user?.personalInfo?.phoneNumber &&
+                <label title={errorInput.user.personalInfo.phone} htmlFor="phone" className="text-red-500 ml-1 flex items-end justify-between error-message-vibration">
+                  <p className="text-xs basis-4/5 ">{errorInput.user.personalInfo.phone || errorInput.user.personalInfo.phoneNumber}</p>
                   <ErrorIco />
                 </label>
               }
@@ -369,11 +389,11 @@ export function FormUser() {
               value={user.personalInfo.description}
               onChange={(e) => handleInputChange(e, "personalInfo")}
               id="description"
-              className={errorInput.user?.personalInfo?.description && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+              className={errorInput.user?.personalInfo?.description && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500 error-input-vibration"}
               placeholder="Describe yourself"
               rows={3} />
             {errorInput.user?.personalInfo?.description &&
-              <label title={errorInput.user.personalInfo.description} htmlFor="description" className="text-red-500 ml-1 flex items-end justify-between">
+              <label title={errorInput.user.personalInfo.description} htmlFor="description" className="text-red-500 ml-1 flex items-end justify-between error-message-vibration">
                 <p className="text-xs basis-4/5 ">{errorInput.user.personalInfo.description}</p>
                 <ErrorIco />
               </label>
@@ -398,10 +418,10 @@ export function FormUser() {
                         onChange={(e) => handleInputArrayChange(e, "technicalSkills")}
                         id="technicalSkills"
                         maxLength={20}
-                        className={errorInput.technicalSkills?.name && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        className={errorInput.technicalSkills?.name && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500 error-input-vibration"}
                         placeholder="Nombre de la Habilidad" />
                       {errorInput.technicalSkills?.name &&
-                        <label title={errorInput.technicalSkills.name} htmlFor="technicalSkills" className="text-red-500 ml-1 flex items-end justify-between">
+                        <label title={errorInput.technicalSkills.name} htmlFor="technicalSkills" className="text-red-500 ml-1 flex items-end justify-between error-message-vibration">
                           <p className="text-xs basis-4/5 ">{errorInput.technicalSkills.name}</p>
                           <ErrorIco />
                         </label>
@@ -431,7 +451,7 @@ export function FormUser() {
           <div>
             <Collapsible>
               <CollapsibleTrigger className="flex w-full items-center justify-between">
-                <div className="font-medium">Educación <p className="text-sm text-red-500">{errorInput.user?.education}</p></div>
+                <div className="font-medium">Educación <p className="text-sm text-red-500 ">{errorInput.user?.education}</p></div>
                 <ChevronDownIcon
                   className="h-5 w-5 transition-transform duration-300 [&[data-state=open]]:rotate-180" />
               </CollapsibleTrigger>
@@ -444,11 +464,11 @@ export function FormUser() {
                         value={infoInput.education.name}
                         onChange={(e) => handleInputArrayChange(e, "education")}
                         maxLength={50}
-                        className={errorInput.education?.name && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        className={errorInput.education?.name && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500 error-input-vibration"}
                         id="school"
                         placeholder="Institución" />
                       {errorInput.education?.name &&
-                        <label title={errorInput.education.name} htmlFor="school" className="text-red-500 ml-1 flex items-end justify-between">
+                        <label title={errorInput.education.name} htmlFor="school" className="text-red-500 ml-1 flex items-end justify-between error-message-vibration">
                           <p className="text-xs basis-4/5 ">{errorInput.education.name}</p>
                           <ErrorIco />
                         </label>
@@ -461,10 +481,10 @@ export function FormUser() {
                         onChange={(e) => handleInputArrayChange(e, "education")}
                         id="degree"
                         maxLength={50}
-                        className={errorInput.education?.degree && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        className={errorInput.education?.degree && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500 error-input-vibration"}
                         placeholder="Título Académico " />
                       {errorInput.education?.degree &&
-                        <label title={errorInput.education.degree} htmlFor="degree" className="text-red-500 ml-1 flex items-end justify-between">
+                        <label title={errorInput.education.degree} htmlFor="degree" className="text-red-500 ml-1 flex items-end justify-between error-message-vibration">
                           <p className="text-xs basis-4/5 ">{errorInput.education.degree}</p>
                           <ErrorIco />
                         </label>
@@ -477,10 +497,10 @@ export function FormUser() {
                         onChange={(e) => handleInputArrayChange(e, "education")}
                         id="concentration"
                         maxLength={50}
-                        className={errorInput.education?.concentration && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        className={errorInput.education?.concentration && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500 error-input-vibration"}
                         placeholder="(opcional)" />
                       {errorInput.education?.concentration &&
-                        <label title={errorInput.education.concentration} htmlFor="concentration" className="text-red-500 ml-1 flex items-end justify-between">
+                        <label title={errorInput.education.concentration} htmlFor="concentration" className="text-red-500 ml-1 flex items-end justify-between error-message-vibration">
                           <p className="text-xs basis-4/5 ">{errorInput.education.concentration}</p>
                           <ErrorIco />
                         </label>
@@ -496,10 +516,10 @@ export function FormUser() {
                         id="graduation-year"
                         type="date"
                         min="1900-01-01"
-                        className={errorInput.education?.graduationDate && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        className={errorInput.education?.graduationDate && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500 error-input-vibration"}
                         placeholder="Año de Graducaion" />
                       {errorInput.education?.graduationDate &&
-                        <label title={errorInput.education.graduationDate} htmlFor="graduation-year" className="text-red-500 ml-1 flex items-end justify-between">
+                        <label title={errorInput.education.graduationDate} htmlFor="graduation-year" className="text-red-500 ml-1 flex items-end justify-between error-message-vibration">
                           <p className="text-xs basis-4/5 ">{errorInput.education.graduationDate}</p>
                           <ErrorIco />
                         </label>
@@ -512,10 +532,10 @@ export function FormUser() {
                         onChange={(e) => handleInputArrayChange(e, "education")}
                         id="education-location"
                         maxLength={50}
-                        className={errorInput.education?.location && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        className={errorInput.education?.location && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500 error-input-vibration"}
                         placeholder="Lugar" />
                       {errorInput.education?.location &&
-                        <label title={errorInput.education.location} htmlFor="education-location" className="text-red-500 ml-1 flex items-end justify-between">
+                        <label title={errorInput.education.location} htmlFor="education-location" className="text-red-500 ml-1 flex items-end justify-between error-message-vibration">
                           <p className="text-xs basis-4/5 ">{errorInput.education.location}</p>
                           <ErrorIco />
                         </label>
@@ -529,10 +549,10 @@ export function FormUser() {
                         type="number"
                         maxLength={3}
                         id="gpa"
-                        className={errorInput.education?.gpa && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        className={errorInput.education?.gpa && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500 error-input-vibration"}
                         placeholder="(opcional)" />
                       {errorInput.education?.gpa &&
-                        <label title={errorInput.education.gpa} htmlFor="gpa" className="text-red-500 ml-1 flex items-end justify-between">
+                        <label title={errorInput.education.gpa} htmlFor="gpa" className="text-red-500 ml-1 flex items-end justify-between error-message-vibration">
                           <p className="text-xs basis-4/5 ">{errorInput.education.gpa}</p>
                           <ErrorIco />
                         </label>
@@ -547,10 +567,10 @@ export function FormUser() {
                         onChange={(e) => handleInputArrayChange(e, "education")}
                         id="education-thesis"
                         maxLength={50}
-                        className={errorInput.education?.thesis && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        className={errorInput.education?.thesis && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500 error-input-vibration"}
                         placeholder="(opcional)" />
                       {errorInput.education?.thesis &&
-                        <label title={errorInput.education.thesis} htmlFor="education-thesis" className="text-red-500 ml-1 flex items-end justify-between">
+                        <label title={errorInput.education.thesis} htmlFor="education-thesis" className="text-red-500 ml-1 flex items-end justify-between error-message-vibration">
                           <p className="text-xs basis-4/5 ">{errorInput.education.thesis}</p>
                           <ErrorIco />
                         </label>
@@ -562,10 +582,10 @@ export function FormUser() {
                         value={infoInput.education.relevantEvents}
                         onChange={(e) => handleInputArrayChange(e, "education")}
                         id="education-relevantEvents"
-                        className={errorInput.education?.relevantEvents && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        className={errorInput.education?.relevantEvents && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500 error-input-vibration"}
                         placeholder="(opcional)" />
                       {errorInput.education?.relevantEvents &&
-                        <label title={errorInput.education.relevantEvents} htmlFor="education-relevantEvents" className="text-red-500 ml-1 flex items-end justify-between">
+                        <label title={errorInput.education.relevantEvents} htmlFor="education-relevantEvents" className="text-red-500 ml-1 flex items-end justify-between error-message-vibration">
                           <p className="text-xs basis-4/5 ">{errorInput.education.relevantEvents}</p>
                           <ErrorIco />
                         </label>
@@ -577,10 +597,10 @@ export function FormUser() {
                         value={infoInput.education.courseWorks}
                         onChange={(e) => handleInputArrayChange(e, "education")}
                         id="education-courseWorks"
-                        className={errorInput.education?.courseWorks && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        className={errorInput.education?.courseWorks && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500 error-input-vibration"}
                         placeholder="(opcional)" />
                       {errorInput.education?.courseWorks &&
-                        <label title={errorInput.education.courseWorks} htmlFor="education-courseWorks" className="text-red-500 ml-1 flex items-end justify-between">
+                        <label title={errorInput.education.courseWorks} htmlFor="education-courseWorks" className="text-red-500 ml-1 flex items-end justify-between error-message-vibration">
                           <p className="text-xs basis-4/5 ">{errorInput.education.courseWorks}</p>
                           <ErrorIco />
                         </label>
@@ -592,7 +612,7 @@ export function FormUser() {
                     (
                       <div className="transition">
                         {user.education.map((edu, index) => (
-                          <Collapsible key={index} className="bg-slate-800 p-2 space-x-2 rounded">
+                          <Collapsible key={index} className="bg-slate-800 p-2 space-x-2 space-y-2 rounded">
                             <CollapsibleTrigger className="flex w-full items-center justify-between">
                               <div className="font-medium">{edu.name}</div>
                               <ChevronDownIcon
@@ -641,10 +661,10 @@ export function FormUser() {
                         onChange={(e) => handleInputArrayChange(e, "experience")}
                         id="experience-company"
                         maxLength={50}
-                        className={errorInput.experience?.organization && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        className={errorInput.experience?.organization && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500 error-input-vibration"}
                         placeholder="Nombre la Organizacion/Empresa" />
                       {errorInput.experience?.organization &&
-                        <label title={errorInput.experience.organization} htmlFor="experience-company" className="text-red-500 ml-1 flex items-end justify-between">
+                        <label title={errorInput.experience.organization} htmlFor="experience-company" className="text-red-500 ml-1 flex items-end justify-between error-message-vibration">
                           <p className="text-xs basis-4/5 ">{errorInput.experience.organization}</p>
                           <ErrorIco />
                         </label>
@@ -657,10 +677,10 @@ export function FormUser() {
                         onChange={(e) => handleInputArrayChange(e, "experience")}
                         id="experience-position"
                         maxLength={50}
-                        className={errorInput.experience?.position && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        className={errorInput.experience?.position && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500 error-input-vibration"}
                         placeholder="Título del empleo" />
                       {errorInput.experience?.position &&
-                        <label title={errorInput.experience.position} htmlFor="experience-position" className="text-red-500 ml-1 flex items-end justify-between">
+                        <label title={errorInput.experience.position} htmlFor="experience-position" className="text-red-500 ml-1 flex items-end justify-between error-message-vibration">
                           <p className="text-xs basis-4/5 ">{errorInput.experience.position}</p>
                           <ErrorIco />
                         </label>
@@ -674,13 +694,13 @@ export function FormUser() {
                         value={infoInput.experience.startDate}
                         onChange={(e) => handleInputArrayChange(e, "experience")}
                         id="experience-startDate"
-                        className={errorInput.experience?.startDate && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        className={errorInput.experience?.startDate && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500 error-input-vibration"}
                         type="date"
                         min="1900-01-01"
                         max={dateToday()}
                       />
                       {errorInput.experience?.startDate &&
-                        <label title={errorInput.experience.startDate} htmlFor="experience-startDate" className="text-red-500 ml-1 flex items-end justify-between">
+                        <label title={errorInput.experience.startDate} htmlFor="experience-startDate" className="text-red-500 ml-1 flex items-end justify-between error-message-vibration">
                           <p className="text-xs basis-4/5 ">{errorInput.experience.startDate}</p>
                           <ErrorIco />
                         </label>
@@ -692,12 +712,12 @@ export function FormUser() {
                         value={infoInput.experience.endDate}
                         onChange={(e) => handleInputArrayChange(e, "experience")}
                         id="experience-endDate"
-                        className={errorInput.experience?.endDate && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        className={errorInput.experience?.endDate && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500 error-input-vibration"}
                         type="date"
                         min="1900-01-01"
                         max={dateToday()} />
                       {errorInput.experience?.endDate &&
-                        <label title={errorInput.experience.endDate} htmlFor="experience-endDate" className="text-red-500 ml-1 flex items-end justify-between">
+                        <label title={errorInput.experience.endDate} htmlFor="experience-endDate" className="text-red-500 ml-1 flex items-end justify-between error-message-vibration">
                           <p className="text-xs basis-4/5 ">{errorInput.experience.endDate}</p>
                           <ErrorIco />
                         </label>
@@ -710,10 +730,10 @@ export function FormUser() {
                         onChange={(e) => handleInputArrayChange(e, "experience")}
                         id="experience-location"
                         maxLength={50}
-                        className={errorInput.experience?.location && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        className={errorInput.experience?.location && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500 error-input-vibration"}
                         placeholder="Lugar" />
                       {errorInput.experience?.location &&
-                        <label title={errorInput.experience.location} htmlFor="experience-location" className="text-red-500 ml-1 flex items-end justify-between">
+                        <label title={errorInput.experience.location} htmlFor="experience-location" className="text-red-500 ml-1 flex items-end justify-between error-message-vibration">
                           <p className="text-xs basis-4/5 ">{errorInput.experience.location}</p>
                           <ErrorIco />
                         </label>
@@ -727,11 +747,11 @@ export function FormUser() {
                       name="description"
                       value={infoInput.experience.description}
                       onChange={(e) => handleInputArrayChange(e, "experience")}
-                      className={errorInput.experience?.description && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                      className={errorInput.experience?.description && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500 error-input-vibration"}
                       placeholder="Descripción de lo que hiciste en la compañia"
                       rows={4} />
                     {errorInput.experience?.description &&
-                      <label title={errorInput.experience.description} htmlFor="experience-description" className="text-red-500 ml-1 flex items-end justify-between">
+                      <label title={errorInput.experience.description} htmlFor="experience-description" className="text-red-500 ml-1 flex items-end justify-between error-message-vibration">
                         <p className="text-xs basis-4/5 ">{errorInput.experience.description}</p>
                         <ErrorIco />
                       </label>
@@ -787,10 +807,10 @@ export function FormUser() {
                         onChange={(e) => handleInputArrayChange(e, "projects")}
                         id="project-name"
                         maxLength={50}
-                        className={errorInput.projects?.name && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        className={errorInput.projects?.name && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500 error-input-vibration"}
                         placeholder="Nombre" />
                       {errorInput.projects?.name &&
-                        <label title={errorInput.projects.name} htmlFor="project-name" className="text-red-500 ml-1 flex items-end justify-between">
+                        <label title={errorInput.projects.name} htmlFor="project-name" className="text-red-500 ml-1 flex items-end justify-between error-message-vibration">
                           <p className="text-xs basis-4/5 ">{errorInput.projects.name}</p>
                           <ErrorIco />
                         </label>
@@ -803,10 +823,10 @@ export function FormUser() {
                         onChange={(e) => handleInputArrayChange(e, "projects")}
                         id="project-role"
                         maxLength={50}
-                        className={errorInput.projects?.position && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        className={errorInput.projects?.position && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500 error-input-vibration"}
                         placeholder="Posición/Rol" />
                       {errorInput.projects?.position &&
-                        <label title={errorInput.projects.position} htmlFor="project-role" className="text-red-500 ml-1 flex items-end justify-between">
+                        <label title={errorInput.projects.position} htmlFor="project-role" className="text-red-500 ml-1 flex items-end justify-between error-message-vibration">
                           <p className="text-xs basis-4/5 ">{errorInput.projects.position}</p>
                           <ErrorIco />
                         </label>
@@ -820,10 +840,10 @@ export function FormUser() {
                       onChange={(e) => handleInputArrayChange(e, "projects")}
                       id="project-description"
                       placeholder="Descripcion del proyecto"
-                      className={errorInput.projects?.description && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                      className={errorInput.projects?.description && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500 error-input-vibration"}
                       rows={4} />
                     {errorInput.projects?.description &&
-                      <label title={errorInput.projects.description} htmlFor="project-description" className="text-red-500 ml-1 flex items-end justify-between">
+                      <label title={errorInput.projects.description} htmlFor="project-description" className="text-red-500 ml-1 flex items-end justify-between error-message-vibration">
                         <p className="text-xs basis-4/5 ">{errorInput.projects.description}</p>
                         <ErrorIco />
                       </label>
@@ -876,10 +896,10 @@ export function FormUser() {
                         onChange={(e) => handleInputArrayChange(e, "leadershipAndActivities")}
                         id="leadershipAndActivities-organization"
                         maxLength={50}
-                        className={errorInput.leadershipAndActivities?.organization && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        className={errorInput.leadershipAndActivities?.organization && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500 error-input-vibration"}
                         placeholder="Organización" />
                       {errorInput.leadershipAndActivities?.organization &&
-                        <label title={errorInput.leadershipAndActivities.organization} htmlFor="leadershipAndActivities-organization" className="text-red-500 ml-1 flex items-end justify-between">
+                        <label title={errorInput.leadershipAndActivities.organization} htmlFor="leadershipAndActivities-organization" className="text-red-500 ml-1 flex items-end justify-between error-message-vibration">
                           <p className="text-xs basis-4/5 ">{errorInput.leadershipAndActivities.organization}</p>
                           <ErrorIco />
                         </label>
@@ -892,10 +912,10 @@ export function FormUser() {
                         onChange={(e) => handleInputArrayChange(e, "leadershipAndActivities")}
                         id="leadershipAndActivities-position"
                         maxLength={50}
-                        className={errorInput.leadershipAndActivities?.role && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        className={errorInput.leadershipAndActivities?.role && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500 error-input-vibration"}
                         placeholder="Ingresa tu Rol" />
                       {errorInput.leadershipAndActivities?.role &&
-                        <label title={errorInput.leadershipAndActivities.role} htmlFor="leadershipAndActivities-position" className="text-red-500 ml-1 flex items-end justify-between">
+                        <label title={errorInput.leadershipAndActivities.role} htmlFor="leadershipAndActivities-position" className="text-red-500 ml-1 flex items-end justify-between error-message-vibration">
                           <p className="text-xs basis-4/5 ">{errorInput.leadershipAndActivities.role}</p>
                           <ErrorIco />
                         </label>
@@ -909,12 +929,12 @@ export function FormUser() {
                         value={infoInput.leadershipAndActivities.startDate}
                         onChange={(e) => handleInputArrayChange(e, "leadershipAndActivities")}
                         id="leadershipAndActivities-startDate"
-                        className={errorInput.leadershipAndActivities?.startDate && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        className={errorInput.leadershipAndActivities?.startDate && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500 error-input-vibration"}
                         type="date"
                         min="1900-01-01"
                         max={dateToday()} />
                       {errorInput.leadershipAndActivities?.startDate &&
-                        <label title={errorInput.leadershipAndActivities.startDate} htmlFor="leadershipAndActivities-startDate" className="text-red-500 ml-1 flex items-end justify-between">
+                        <label title={errorInput.leadershipAndActivities.startDate} htmlFor="leadershipAndActivities-startDate" className="text-red-500 ml-1 flex items-end justify-between error-message-vibration">
                           <p className="text-xs basis-4/5 ">{errorInput.leadershipAndActivities.startDate}</p>
                           <ErrorIco />
                         </label>
@@ -926,12 +946,12 @@ export function FormUser() {
                         value={infoInput.leadershipAndActivities.endDate}
                         onChange={(e) => handleInputArrayChange(e, "leadershipAndActivities")}
                         id="leadershipAndActivitiesAndActivitiesAndActivities-endDate"
-                        className={errorInput.leadershipAndActivities?.endDate && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        className={errorInput.leadershipAndActivities?.endDate && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500 error-input-vibration"}
                         type="date"
                         min="1900-01-01"
                         max={dateToday()} />
                       {errorInput.leadershipAndActivities?.endDate &&
-                        <label title={errorInput.leadershipAndActivities.endDate} htmlFor="leadershipAndActivitiesAndActivitiesAndActivities-endDate" className="text-red-500 ml-1 flex items-end justify-between">
+                        <label title={errorInput.leadershipAndActivities.endDate} htmlFor="leadershipAndActivitiesAndActivitiesAndActivities-endDate" className="text-red-500 ml-1 flex items-end justify-between error-message-vibration">
                           <p className="text-xs basis-4/5 ">{errorInput.leadershipAndActivities.endDate}</p>
                           <ErrorIco />
                         </label>
@@ -944,10 +964,10 @@ export function FormUser() {
                         onChange={(e) => handleInputArrayChange(e, "leadershipAndActivities")}
                         id="leadershipAndActivities-location"
                         maxLength={50}
-                        className={errorInput.leadershipAndActivities?.location && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                        className={errorInput.leadershipAndActivities?.location && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500 error-input-vibration"}
                         placeholder="Lugar" />
                       {errorInput.leadershipAndActivities?.location &&
-                        <label title={errorInput.leadershipAndActivities.location} htmlFor="leadershipAndActivities-location" className="text-red-500 ml-1 flex items-end justify-between">
+                        <label title={errorInput.leadershipAndActivities.location} htmlFor="leadershipAndActivities-location" className="text-red-500 ml-1 flex items-end justify-between error-message-vibration">
                           <p className="text-xs basis-4/5 ">{errorInput.leadershipAndActivities.location}</p>
                           <ErrorIco />
                         </label>
@@ -961,11 +981,11 @@ export function FormUser() {
                       name="achievements"
                       value={infoInput.leadershipAndActivities.achievements}
                       onChange={(e) => handleInputArrayChange(e, "leadershipAndActivities")}
-                      className={errorInput.leadershipAndActivities?.achievements && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                      className={errorInput.leadershipAndActivities?.achievements && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500 error-input-vibration"}
                       placeholder="Describe lo que hiciste en este evento o los logros que obtuviste"
                       rows={4} />
                     {errorInput.leadershipAndActivities?.achievements &&
-                      <label title={errorInput.leadershipAndActivities.achievements} htmlFor="leadershipAndActivities-achievements" className="text-red-500 ml-1 flex items-end justify-between">
+                      <label title={errorInput.leadershipAndActivities.achievements} htmlFor="leadershipAndActivities-achievements" className="text-red-500 ml-1 flex items-end justify-between error-message-vibration">
                         <p className="text-xs basis-4/5 ">{errorInput.leadershipAndActivities.achievements}</p>
                         <ErrorIco />
                       </label>
@@ -1007,7 +1027,13 @@ export function FormUser() {
         </div>
       </CardContent>
       <CardFooter className="flex justify-end">
-        <Button className="border bg-teal-600 hover:bg-green-600 rounded-full" onClick={saveInfoUser}>Guardar Informacion <SaveIco /></Button>
+        {success && (
+          <div className="flex text-green-500">
+            <CheckIco className="size-6"/>
+            <p className="text-sm">¡La información se ha guardado correctamente!</p>
+          </div>
+        )}
+        <Button className={`border bg-gradient-to-r hover:from-blue-800 hover:to-red-700 from-sky-800 to-indigo-600 bg-vnzla rounded-full ${loading && 'cursor-wait'}`} onClick={saveInfoUser}>{loading ? 'Guardando...' : 'Guardar Informacion'} <SaveIco className="fill-amber-400 size-5"/></Button>
       </CardFooter>
     </Card>)
   );
