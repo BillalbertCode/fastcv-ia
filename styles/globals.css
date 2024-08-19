@@ -47,6 +47,6 @@ p {
 .text-foreground {
     color: var(--foreground);
 }
-  input {
+  input,select {
     color-scheme: dark;
   }

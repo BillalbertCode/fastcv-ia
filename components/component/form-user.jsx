@@ -9,11 +9,12 @@ import { Textarea } from "@/components/ui/textarea"
 import { Separator } from "@/components/ui/separator"
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible"
 import { Button } from "@/components/ui/button"
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectItem } from "@/components/ui/select"
 // Iconos
 import { ErrorIco, InfoIco, SaveIco, TrashIco } from "../resources/Icons"
 // Schema
 import { skillSchema, educationSchema, experienceSchema, projectSchema, leadershipSchema, userInfoSchema } from "../schemas/userInfo.schema"
-
+import { phoneCountrys } from "@/utils/phoneCountrys"
 
 export function FormUser() {
 
@@ -22,6 +23,8 @@ export function FormUser() {
     personalInfo: {
       name: '',
       lastName: '',
+      countryCode: '',
+      phoneNumber: '',
       phone: '',
       email: '',
       description: ''
@@ -207,13 +210,8 @@ export function FormUser() {
 
   // Guardar informacion del usuario
   const saveInfoUser = () => {
-    debugger
-    console.log(user)
-
     // Funcion recursiva para asignar los errores
     const { success, error } = userInfoSchema.safeParse(user)
-    console.log(success)
-    console.log(error?.issues)
     if (!success) {
       const errorObject = {};
       // Recorremos los datos del objeto ZodError para agregarlo al inputError
@@ -235,7 +233,8 @@ export function FormUser() {
       setErrorInput({ ...errorInput, user: errorObject });
       return
     }
-    console.log(user)
+    // vaciamos los errores
+    setErrorInput({})
     localStorage.setItem("user", JSON.stringify(user));
   };
 
@@ -304,13 +303,57 @@ export function FormUser() {
               }
             </div>
             <div className="space-y-2">
+
+
               <Label htmlFor="phone">Teléfono</Label>
-              <Input name="phone"
-                value={user.personalInfo.phone}
-                onChange={(e) => handleInputChange(e, "personalInfo")}
-                id="phone"
-                className={errorInput.user?.personalInfo?.phone && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
-                placeholder="Teléfono" />
+              <div className="flex items-center gap-2">
+                <Select onValueChange={(value) => {
+                  const newPhoneValue = `${value} ${user.personalInfo.phoneNumber}`;
+                  setUser({
+                    ...user,
+                    personalInfo: {
+                      ...user.personalInfo,
+                      countryCode: value,
+                      phone: newPhoneValue
+                    }
+                  });
+                }}>
+                  <SelectTrigger className="w-32">
+                    <SelectValue placeholder={user.personalInfo.countryCode || 'Select'} />
+                  </SelectTrigger>
+                  <SelectContent className="bg-gradient-to-r from-cyan-500 to-blue-500">
+                    <SelectGroup>
+                      {phoneCountrys.map((phone, index) => {
+                        return (
+                          <SelectItem
+                            className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:to-blue-800 focus:to-blue-800 "
+                            key={index}
+                            title={phone.name + phone.phoneCode}
+                            value={phone.phoneCode}
+                          >
+                            {phone.code}
+                            <span className="text-yellow-250 font-medium">{phone.phoneCode}</span>
+                          </SelectItem>
+                        )
+                      })}
+                      <SelectItem
+                        className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:to-blue-800 focus:to-blue-800 "
+                        value={' '}
+                      >
+                        Ninguno
+                      </SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <Input id="phoneNumber"
+                  value={user.personalInfo.phoneNumber}
+                  onChange={(e) => handleInputChange(e, "personalInfo")}
+                  className={errorInput.user?.personalInfo?.phone && "text-red-400 border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500 focus-visible:ring-offset-red-500"}
+                  name="phoneNumber"
+                  type="tel"
+                  placeholder="Teléfono" />
+              </div>
+
               {errorInput.user?.personalInfo?.phone &&
                 <label title={errorInput.user.personalInfo.phone} htmlFor="phone" className="text-red-500 ml-1 flex items-end justify-between">
                   <p className="text-xs basis-4/5 ">{errorInput.user.personalInfo.phone}</p>

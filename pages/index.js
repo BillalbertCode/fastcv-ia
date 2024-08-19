@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import TemplateHarvard from '@/components/cv/components/TemplateHarvard';
-import person from '@/personFake';
 import { fetchCreateCV } from '@/components/cv/utils/fetchCreateCv';
 import { FormUser } from '@/components/component/form-user';
 import JobForm from '@/components/cv/components/JobForm';
