@@ -1,8 +1,8 @@
 // Funcion controlada
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import { z } from "zod";
 import { generateObject, generateText } from 'ai';
-
+import { schemaIA } from "@/utils/schemas/curriculumIA.schema";
+import { userServerSchema } from "@/utils/schemas/userInfo.schema";
 const google = createGoogleGenerativeAI({
   apiKey: process.env.NEXT_PUBLIC_GEMINIS_API_KEY
 });
@@ -70,51 +70,15 @@ export default async function handler(req, res) {
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
-  const { personalInfo, education, experience, projects, leadershipAndActivities, technicalSkills, jobDescription } = req.body;
+  // Validacion de datos con el esquema 
+  const { success, data, error } = userServerSchema.safeParse(req.body)
 
-  // Esquema para la generacion de la IA
-  const schema = z.object({
-    personDescription: z.string(),
-    education: z.array(z.object({
-      name: z.string(),
-      location: z.string(),
-      degree: z.string(),
-      concentration: z.string(),
-      gpa: z.string(),
-      graduationDate: z.string(),
-      thesis: z.string(),
-      relevantEvents: z.string(),
-      courseWorks: z.string(),
-      type: z.string()
-    })),
-    experience: z.array(z.object({
-      organization: z.string(),
-      location: z.string(),
-      position: z.string(),
-      startDate: z.string(),
-      endDate: z.string(),
-      description: z.string()
-    })),
-    projects: z.array(z.object({
-      name: z.string(),
-      position: z.string(),
-      description: z.string()
-    })),
-    leadershipAndActivities: z.array(z.object({
-      organization: z.string(),
-      location: z.string(),
-      role: z.string(),
-      startDate: z.string(),
-      endDate: z.string(),
-      achievements: z.array(z.string())
-    })),
-    technicalSkills: z.array(z.object({
-      category: z.string(),
-      skills: z.array(z.string())
-    })),
-    compatibilityWithWork: z.number(),
-    feedbackMessage: z.string()
-  })
+  // Control de datos fallidos 
+  if (!success) {
+    return res.status(400).json({ error: { message: 'Invalid request', error: error.issues } })
+  }
+  // extraccion de datos
+  const { personalInfo, education, experience, projects, leadershipAndActivities, technicalSkills, jobDescription } = data;
 
   //  Prompt con las intrucciones de la creacion de la respuesta de la IA
   const prompt = `
@@ -135,7 +99,7 @@ export default async function handler(req, res) {
     const googleResponse = await generateObject({
       model: google('models/gemini-1.5-pro-latest'),
       prompt,
-      schema,
+      schema: schemaIA,
       system: "Eres un sistema automatico que va a mejorar las descripciones y datos que te dan de un usuario segun una descripcion de trabajo al cual aplicara",
       mode: "json"
     });
@@ -158,6 +122,6 @@ export default async function handler(req, res) {
     }
     res.status(200).json({ cv: cv });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: {message: 'Error en el servidor',  error: error } });
   }
 }

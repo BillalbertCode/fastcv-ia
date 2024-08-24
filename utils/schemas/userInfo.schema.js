@@ -55,6 +55,17 @@ const dateFormate = (dateScheme) => {
 // Esquema de los datos, Validacion, Formato 
 const parsedDate = dateFormate(dateScheme);
 
+// PersonalInfo Schema
+
+const personalInfoSchema = z.object({
+    name: z.string().min(1, { message: requeridoMsg }).max(50, { message: requeridoMsgMax(50) }),
+    lastName: z.string().min(1, { message: requeridoMsg }).max(50, { message: requeridoMsgMax(50) }),
+    phoneNumber: z.string().min(1, { message: requeridoMsg }).regex(/^(\+?\d{1,3})?[-. ]?(\d{3,12})$/, { message: 'Ingresa un numero de telefono valido' }),
+    phone: z.string().min(1, { message: requeridoMsg }),
+    email: z.string().min(1, { message: requeridoMsg }).email({ message: 'Ingresa un email valido' }),
+    description: z.string().min(10, { message: 'Mínimo 10 caracteres' }).max(1100, { message: requeridoMsgMax(1100) })
+})
+
 // Exportacion de Esquemas
 export const skillSchema = z.object({
     name: z.string().min(1, { message: requeridoMsg }).max(20, { message: requeridoMsgMax(20) }),
@@ -97,13 +108,17 @@ export const leadershipSchema = z.object({
 })
 
 export const userInfoSchema = z.object({
-    personalInfo: z.object({
-        name: z.string().min(1, { message: requeridoMsg }).max(50, { message: requeridoMsgMax(50) }),
-        lastName: z.string().min(1, { message: requeridoMsg }).max(50, { message: requeridoMsgMax(50) }),
-        phoneNumber: z.string().min(1, { message: requeridoMsg }).regex(/^(\+?\d{1,3})?[-. ]?(\d{3,12})$/, { message: 'Ingresa un numero de telefono valido' }),
-        phone: z.string().min(1, { message: requeridoMsg }),
-        email: z.string().min(1, { message: requeridoMsg }).email({ message: 'Ingresa un email valido' }),
-        description: z.string().min(10, { message: 'Mínimo 10 caracteres' }).max(1100, { message: requeridoMsgMax(1100) })
-    }),
+    personalInfo: personalInfoSchema,
     education: z.array(z.any()).nonempty({ message: requeridoMsg })
+})
+
+// Esquema que usa el server para validar los datos 
+export const userServerSchema = z.object({
+    personalInfo: personalInfoSchema,
+    technicalSkills: z.array(skillSchema).optional(),
+    education: z.array(educationSchema.extend({ graduationDate: z.string() })).nonempty(),
+    experience: z.array(experienceSchema.extend({ startDate: z.string(), endDate: z.string() })).optional(),
+    projects: z.array(projectSchema).optional(),
+    leadershipAndActivities: z.array(leadershipSchema.extend({ startDate: z.string(), endDate: z.string() })).optional(),
+    jobDescription: z.string().min(32,{message: 'Mínimo 10 caracteres'}).max(1100,{message: requeridoMsgMax(1100)}).optional()
 })
