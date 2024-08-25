@@ -120,5 +120,5 @@ export const userServerSchema = z.object({
     experience: z.array(experienceSchema.extend({ startDate: z.string(), endDate: z.string() })).optional(),
     projects: z.array(projectSchema).optional(),
     leadershipAndActivities: z.array(leadershipSchema.extend({ startDate: z.string(), endDate: z.string() })).optional(),
-    jobDescription: z.string().min(32,{message: 'Mínimo 10 caracteres'}).max(1100,{message: requeridoMsgMax(1100)}).optional()
+    jobDescription: z.string().min(32,{message: 'Mínimo 32 caracteres'}).max(1100,{message: requeridoMsgMax(1100)}).optional()
 })
