@@ -13,7 +13,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectI
 // Iconos
 import { CheckIco, ErrorIco, InfoIco, SaveIco, TrashIco } from "../resources/Icons"
 // Schema
-import { skillSchema, educationSchema, experienceSchema, projectSchema, leadershipSchema, userInfoSchema } from "../schemas/userInfo.schema"
+import { skillSchema, educationSchema, experienceSchema, projectSchema, leadershipSchema, userInfoSchema } from "../../utils/schemas/userInfo.schema"
 import { phoneCountrys } from "@/utils/phoneCountrys"
 
 export function FormUser() {
@@ -99,6 +99,7 @@ export function FormUser() {
   // Guardar la informacion en cache
   const [loading, setLoading] = useState(false)
 
+  // evento de guardado exitosamente
   const [success, setSuccess] = useState()
 
   // control de inputs directos
@@ -323,8 +324,6 @@ export function FormUser() {
               }
             </div>
             <div className="space-y-2">
-
-
               <Label htmlFor="phone">Teléfono</Label>
               <div className="flex items-center gap-2">
                 <Select onValueChange={(value) => {

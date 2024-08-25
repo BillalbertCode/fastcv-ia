@@ -23,11 +23,11 @@ export const fetchCreateCV = async (userData) => {
         return {cv: data.cv}
       } else {
         console.error(data.error);
-        return {error: data.error}
+        throw new Error(data.error.message);
       }
     }
     catch (error) {
       console.error(error);
-      return {error: 'Error en la obtencion de la informacion'}
+      return {error: 'Error: ' + error.message}
     }
   };

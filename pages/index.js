@@ -38,16 +38,17 @@ export default function Home() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true)
+    setError(false)
     const response = await fetchCreateCV(user)
 
     if (response) {
       if ('cv' in response) {
         setCv(response.cv)
-        setLoading(false)
       } else {
         console.error(response.error)
         setError(response.error)
       }
+      setLoading(false)
     }
   }
 
@@ -64,10 +65,10 @@ export default function Home() {
             <FormUser />
           </div>
           <div className='flex flex-col justify-center'>
-            <JobForm onChange={handleJobDescriptionChange} feedbackMessage={cv.feedbackMessage} compatibilityWithWork={cv.compatibilityWithWork} />
+            <JobForm onChange={handleJobDescriptionChange} feedbackMessage={cv?.feedbackMessage} compatibilityWithWork={cv?.compatibilityWithWork} />
             <button disabled={Object.keys(user).length === 0} onClick={handleSubmit} className="btn bg-green-500 text-white mx-auto py-2 px-4 rounded">Generar Cv </button>
             <p className="text-center font-medium">{loading ? "Generando CV por favor espere..." : " "}</p>
-            <p className="text-center text-red-600 font-medium">{error && `Error, recargue la pagina:${error}`}</p>
+            <p className="text-center text-red-600 font-medium">{error && error}</p>
           </div>
         </div>
 

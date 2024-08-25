@@ -1,14 +1,21 @@
-// Funcion controlada
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import { z } from "zod";
-import { generateObject, generateText } from 'ai';
+// API de generacion de los datos CV
+// Esta API recibe los datos del usuario y lo mejora
+// Ademas Devuelve Mensaje de Feedback y compatibilidad
 
+// SDK Vercel
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import { generateObject, generateText } from 'ai';
+// Esquemas
+import { schemaIA } from "@/utils/schemas/curriculumIA.schema";
+import { userServerSchema } from "@/utils/schemas/userInfo.schema";
+
+// Uso de la API de Geminis
 const google = createGoogleGenerativeAI({
   apiKey: process.env.NEXT_PUBLIC_GEMINIS_API_KEY
 });
 
 // Funcion de mapeo de arrays
-// Para volver en un string la informacion para el prompt
+// Para devolver en un string la informacion que necesita el prompt
 const getEstudios = (education) => {
   return education.map((edu, index) => (
     ` Institución: ${edu.name}
@@ -64,81 +71,58 @@ const getTechnicalSkills = (skills) => {
   )).join('\n')
 }
 
+//  Prompt con las intrucciones de la creacion de la respuesta de la IA
+const promptCV = data => `
+    Segun la informacion de esta persona, modifica de manera veridica la informacion de la persona para que se adapte a la descripcion del empleo
+    para crear un cv con las reglas de harvard de como crear un resume apropiado.
+    Detalles relevantes: todos los formatos de fechas lo colocas como mes y año, toda la informacion no proporcionada la colocas como "undefined"
+    - Descripcion del empleo ${data.jobDescription}
+    - Auto Descripción de la persona, maximo 300 caracteres: ${data.personalInfo.description}
+    - Estudios segun la persona: ${getEstudios(data.education)} maximo 3 estudios segun los mas compatibles con el empleo
+    - Experiencia segun la persona, descripcion de maximo 350 caracteres por empleo: ${getExperience(data.experience)}  maximo 3 experiencias segun los mas compatibles con el empleo
+    - Proyectos segun la persona, descripcion de maximo 350 caracteres por proyecto : ${getProjects(data.projects)}  maximo 2 proyectos segun los mas compatibles con el empleo.
+    - Liderazgo y Actividades segun la persona, descripcion de maximo 350 caracteres por Actividad: ${getleadershipAndActivities(data.leadershipAndActivities)} maximo 2 segun los mas compatibles con el empleo.
+    - Habilidades Tecnicas segun la persona: ${getTechnicalSkills(data.technicalSkills)}, analiza el resto de informacion del usuario para añadir nuevas habilidades, y dividelo en categorias 
+    Dale una puntuacion de que tan compatible es la persona con la descripcion del empleo del 1 al 100 , y un mensaje de feedback segun que deberia aprender o mejorar para el empleo que esta solicitando.
+    `;
 
+// API Response
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
-  const { personalInfo, education, experience, projects, leadershipAndActivities, technicalSkills, jobDescription } = req.body;
+  // Validacion de datos con el esquema 
+  const { success, data, error } = userServerSchema.safeParse(req.body)
 
-  // Esquema para la generacion de la IA
-  const schema = z.object({
-    personDescription: z.string(),
-    education: z.array(z.object({
-      name: z.string(),
-      location: z.string(),
-      degree: z.string(),
-      concentration: z.string(),
-      gpa: z.string(),
-      graduationDate: z.string(),
-      thesis: z.string(),
-      relevantEvents: z.string(),
-      courseWorks: z.string(),
-      type: z.string()
-    })),
-    experience: z.array(z.object({
-      organization: z.string(),
-      location: z.string(),
-      position: z.string(),
-      startDate: z.string(),
-      endDate: z.string(),
-      description: z.string()
-    })),
-    projects: z.array(z.object({
-      name: z.string(),
-      position: z.string(),
-      description: z.string()
-    })),
-    leadershipAndActivities: z.array(z.object({
-      organization: z.string(),
-      location: z.string(),
-      role: z.string(),
-      startDate: z.string(),
-      endDate: z.string(),
-      achievements: z.array(z.string())
-    })),
-    technicalSkills: z.array(z.object({
-      category: z.string(),
-      skills: z.array(z.string())
-    })),
-    compatibilityWithWork: z.number(),
-    feedbackMessage: z.string()
-  })
+  // Control de datos fallidos 
+  if (!success) {
+    return res.status(400).json({ error: { message: 'Invalid request', error: error.issues } })
+  }
 
-  //  Prompt con las intrucciones de la creacion de la respuesta de la IA
-  const prompt = `
-    Segun la informacion de esta persona, modifica de manera veridica la informacion de la persona para que se adapte a la descripcion del empleo 
-    para crear un cv con las reglas de harvard de como crear un resume apropiado.
-    Detalles relevantes: todos los formatos de fechas lo colocas como mes y año, toda la informacion no proporcionada la colocas como "undefined"
-    - Descripcion del empleo ${jobDescription}
-    - Auto Descripción de la persona, maximo 300 caracteres: ${personalInfo.description}
-    - Estudios segun la persona: ${getEstudios(education)} maximo 3 estudios segun los mas compatibles con el empleo
-    - Experiencia segun la persona, descripcion de maximo 350 caracteres por empleo: ${getExperience(experience)}  maximo 3 experiencias segun los mas compatibles con el empleo
-    - Proyectos segun la persona, descripcion de maximo 350 caracteres por proyecto : ${getProjects(projects)}  maximo 2 proyectos segun los mas compatibles con el empleo.
-    - Liderazgo y Actividades segun la persona, descripcion de maximo 350 caracteres por Actividad: ${getleadershipAndActivities(leadershipAndActivities)} maximo 2 segun los mas compatibles con el empleo.
-    - Habilidades Tecnicas segun la persona: ${getTechnicalSkills(technicalSkills)}, analiza el resto de informacion del usuario para añadir nuevas habilidades, y dividelo en categorias 
-    Dale una puntuacion de que tan compatible es la persona con la descripcion del empleo del 1 al 100 , y un mensaje de feedback segun que deberia aprender o mejorar para el empleo que esta solicitando.
-    `;
+  // extraccion de datos de usuario 
+  const { personalInfo } = data;
+
   try {
     // Peticion de respuesta IA
     const googleResponse = await generateObject({
       model: google('models/gemini-1.5-pro-latest'),
-      prompt,
-      schema,
+      prompt: promptCV(data),
+      schema: schemaIA,
       system: "Eres un sistema automatico que va a mejorar las descripciones y datos que te dan de un usuario segun una descripcion de trabajo al cual aplicara",
       mode: "json"
     });
+
+    // Extaccion de la data dada por la IA
+    const {
+      education,
+      experience,
+      projects,
+      leadershipAndActivities,
+      technicalSkills,
+      compatibilityWithWork,
+      feedbackMessage
+    } = googleResponse.object
 
     // Formato de Cv disponible para la Api
     const cv = {
@@ -148,16 +132,16 @@ export default async function handler(req, res) {
         email: personalInfo.email,
         phone: personalInfo.phone
       },
-      education: googleResponse.object.education,
-      experience: googleResponse.object.experience,
-      projects: googleResponse.object.projects,
-      leadershipAndActivities: googleResponse.object.leadershipAndActivities,
-      technicalSkills: googleResponse.object.technicalSkills,
-      compatibilityWithWork: googleResponse.object.compatibilityWithWork,
-      feedbackMessage: googleResponse.object.feedbackMessage
+      education,
+      experience,
+      projects,
+      leadershipAndActivities,
+      technicalSkills,
+      compatibilityWithWork,
+      feedbackMessage
     }
     res.status(200).json({ cv: cv });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: { message: 'Error al generar la respuesta de la IA', error: error } });
   }
 }
