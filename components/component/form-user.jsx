@@ -21,41 +21,17 @@ import { XCircleIcon } from "lucide-react"
 
 export function FormUser() {
   // Context 
-  const { saveUserCache } = useContext(UserContext)
+  const { saveUserCache, userData } = useContext(UserContext)
+
   // datos del usuario
-  const [user, setUser] = useState({
-    personalInfo: {
-      name: '',
-      lastName: '',
-      countryCode: '',
-      phoneNumber: '',
-      phone: '',
-      email: '',
-      description: ''
-    },
-    technicalSkills: [],
-    education: [],
-    experience: [],
-    projects: [],
-    leadershipAndActivities: []
-  });
+  const [user, setUser] = useState(userData);
 
   useEffect(() => {
-    const userInfo = localStorage.getItem("user")
-
-    if (userInfo) {
-      try {
-
-        const parsedUserInfo = JSON.parse(userInfo)
-
-        setUser(parsedUserInfo)
-      }
-      catch (error) {
-        console.error("Error parsing user info from localStorage:", error);
-      }
+    if (userData) {
+      setUser(userData);
+      console.log(userData)
     }
-  }, []);
-
+  }, [userData]);
 
   // Manejador de inputs
   // Estado de los input para luego añadirlos a la informacion del usuario
