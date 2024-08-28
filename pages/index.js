@@ -14,10 +14,10 @@ export default function Home() {
 
   // Datos usuario proveidos por el context
   const { userData } = useContext(UserContext)
-  
+
   // Asignamos los valores del usuario
   const [user, setUser] = useState(userData)
-  
+
   // Escucha activa de los datos del usuario
   useEffect(() => {
     if (userData) {
@@ -25,6 +25,7 @@ export default function Home() {
     }
   }, [userData]);
 
+  const [jobDescription, setJobDescription] = useState('')
   //Carga del curriculum
   const [loading, setLoading] = useState(false)
 
@@ -36,7 +37,19 @@ export default function Home() {
     e.preventDefault();
     setLoading(true)
     setError(false)
-    const response = await fetchCreateCV(user)
+
+    // handler object 
+    // Posible funcion para que se pueda mandar sin descripcion
+    // const objectReq = () => {
+    //   if (jobDescription.length > 0) {
+    //     return { ...user, jobDescription }
+    //   }
+      
+    //   return user
+    // }
+    
+    const objectReq = { ...user, jobDescription }
+    const response = await fetchCreateCV(objectReq)
 
     if (response) {
       if ('cv' in response) {
@@ -51,7 +64,7 @@ export default function Home() {
 
   // Descripcion del empleo
   const handleJobDescriptionChange = (e) => {
-    setUser({ ...user, jobDescription: e.target.value });
+    setJobDescription(e.target.value);
   };
 
   return (
