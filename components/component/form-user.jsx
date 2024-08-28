@@ -13,23 +13,24 @@ import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/component
 import { Button } from "@/components/ui/button"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectItem } from "@/components/ui/select"
 // Iconos
-import { CheckIco, ErrorIco, InfoIco, SaveIco, TrashIco } from "../resources/Icons"
-// Schema
-import { skillSchema, educationSchema, experienceSchema, projectSchema, leadershipSchema, userInfoSchema } from "../../utils/schemas/userInfo.schema"
-import { phoneCountrys } from "@/utils/phoneCountrys"
+import { CheckIco, ErrorIco, SaveIco, TrashIco } from "../resources/Icons"
 import { XCircleIcon } from "lucide-react"
+// Schema
+import { skillSchema, educationSchema, experienceSchema, projectSchema, leadershipSchema } from "../../utils/schemas/userInfo.schema"
+// Utilidades
+import { phoneCountrys } from "@/utils/phoneCountrys" //Array con la informacion de los codigos de telefono
 
 export function FormUser() {
-  // Context 
+  // Context para manejar la data del usuario
   const { saveUserCache, userData } = useContext(UserContext)
 
   // datos del usuario
   const [user, setUser] = useState(userData);
 
+  // Escucha activa de los datos del usuario
   useEffect(() => {
     if (userData) {
       setUser(userData);
-      console.log(userData)
     }
   }, [userData]);
 
