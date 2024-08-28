@@ -109,7 +109,11 @@ export const leadershipSchema = z.object({
 
 export const userInfoSchema = z.object({
     personalInfo: personalInfoSchema,
-    education: z.array(z.any()).nonempty({ message: requeridoMsg })
+    technicalSkills: z.array(skillSchema).optional(),
+    education: z.array(educationSchema.extend({ graduationDate: z.string() })).nonempty(),
+    experience: z.array(experienceSchema.extend({ startDate: z.string(), endDate: z.string() })).optional(),
+    projects: z.array(projectSchema).optional(),
+    leadershipAndActivities: z.array(leadershipSchema.extend({ startDate: z.string(), endDate: z.string() })).optional()
 })
 
 // Esquema que usa el server para validar los datos 
