@@ -109,16 +109,14 @@ export const leadershipSchema = z.object({
 
 export const userInfoSchema = z.object({
     personalInfo: personalInfoSchema,
-    education: z.array(z.any()).nonempty({ message: requeridoMsg })
-})
-
-// Esquema que usa el server para validar los datos 
-export const userServerSchema = z.object({
-    personalInfo: personalInfoSchema,
     technicalSkills: z.array(skillSchema).optional(),
     education: z.array(educationSchema.extend({ graduationDate: z.string() })).nonempty(),
     experience: z.array(experienceSchema.extend({ startDate: z.string(), endDate: z.string() })).optional(),
     projects: z.array(projectSchema).optional(),
-    leadershipAndActivities: z.array(leadershipSchema.extend({ startDate: z.string(), endDate: z.string() })).optional(),
+    leadershipAndActivities: z.array(leadershipSchema.extend({ startDate: z.string(), endDate: z.string() })).optional()
+})
+
+// Esquema que usa el server para validar los datos 
+export const userServerSchema = userInfoSchema.extend({
     jobDescription: z.string().min(32,{message: 'Mínimo 32 caracteres'}).max(1100,{message: requeridoMsgMax(1100)}).optional()
 })

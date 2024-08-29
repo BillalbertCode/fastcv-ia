@@ -1,6 +1,8 @@
 // Fprmulario de informacion de usuario
 // Contiene los manejadores de los input y el guardado de la informacion en cache
 import { useState, useEffect } from "react"
+import { useContext } from "react"
+import { UserContext } from "@/utils/contexts/UserContext"
 // UI components
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
@@ -11,47 +13,26 @@ import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/component
 import { Button } from "@/components/ui/button"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectItem } from "@/components/ui/select"
 // Iconos
-import { CheckIco, ErrorIco, InfoIco, SaveIco, TrashIco } from "../resources/Icons"
+import { CheckIco, ErrorIco, SaveIco, TrashIco } from "../resources/Icons"
+import { XCircleIcon } from "lucide-react"
 // Schema
-import { skillSchema, educationSchema, experienceSchema, projectSchema, leadershipSchema, userInfoSchema } from "../../utils/schemas/userInfo.schema"
-import { phoneCountrys } from "@/utils/phoneCountrys"
+import { skillSchema, educationSchema, experienceSchema, projectSchema, leadershipSchema } from "../../utils/schemas/userInfo.schema"
+// Utilidades
+import { phoneCountrys } from "@/utils/phoneCountrys" //Array con la informacion de los codigos de telefono
 
 export function FormUser() {
+  // Context para manejar la data del usuario
+  const { saveUserCache, userData } = useContext(UserContext)
 
   // datos del usuario
-  const [user, setUser] = useState({
-    personalInfo: {
-      name: '',
-      lastName: '',
-      countryCode: '',
-      phoneNumber: '',
-      phone: '',
-      email: '',
-      description: ''
-    },
-    technicalSkills: [],
-    education: [],
-    experience: [],
-    projects: [],
-    leadershipAndActivities: []
-  });
+  const [user, setUser] = useState(userData);
 
+  // Escucha activa de los datos del usuario
   useEffect(() => {
-    const userInfo = localStorage.getItem("user")
-
-    if (userInfo) {
-      try {
-
-        const parsedUserInfo = JSON.parse(userInfo)
-
-        setUser(parsedUserInfo)
-      }
-      catch (error) {
-        console.error("Error parsing user info from localStorage:", error);
-      }
+    if (userData) {
+      setUser(userData);
     }
-  }, []);
-
+  }, [userData]);
 
   // Manejador de inputs
   // Estado de los input para luego añadirlos a la informacion del usuario
@@ -100,7 +81,11 @@ export function FormUser() {
   const [loading, setLoading] = useState(false)
 
   // evento de guardado exitosamente
-  const [success, setSuccess] = useState()
+  const [success, setSuccess] = useState({
+    message: '',
+    status: true,
+    visibility: false
+  })
 
   // control de inputs directos
   const handleInputChange = (e, objectKeyName) => {
@@ -212,49 +197,66 @@ export function FormUser() {
       [arrayName]: user[arrayName].filter((item, i) => i !== index)
     })
   }
+  // Funcion para asignar los errores issues de los inputs a un objeto
+  const convertZodErrors = (error) => {
+    const errorObject = {}
+
+    // Recorremos los datos del objeto ZodError para agregarlo al inputError
+    // Asigna las validaciones para que sea facil de acceder
+    error.issues.forEach((issue) => {
+      const path = issue.path
+      const message = issue.message
+      let current = errorObject
+      for (let i = 0; i < path.length - 1; i++) {
+        const key = path[i]
+        if (!current[key]) {
+          current[key] = {}
+        }
+        current = current[key]
+      }
+      current[path[path.length - 1]] = message;
+    })
+    // Devuelve un objeto con una estructura facil de usar
+    return errorObject
+  }
+
+  // Notificacion de usuario guardado
+  const notificationSaveUser = (message, status) => {
+    setSuccess({ message, status, visibility: true })
+  }
+
+  // Manejo del tiempo de la Notificacion
+  useEffect(() => {
+    if (success.visibility) {
+      const timeoutId = setTimeout(() => {
+        setSuccess({ visibility: false });
+      }, 5000);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [success]);
 
   // Guardar informacion del usuario
-  const saveInfoUser = async () => {
+  const saveInfoUser = () => {
     setLoading(true);
-    // Funcion recursiva para asignar los errores
-    const { success, error } = userInfoSchema.safeParse(user)
-    if (!success) {
-      const errorObject = {};
-      // Recorremos los datos del objeto ZodError para agregarlo al inputError
-      // Asigna las validaciones para que sea facil de acceder
-      error.issues.forEach((issue) => {
-        const path = issue.path;
-        const message = issue.message;
-        let current = errorObject;
-        for (let i = 0; i < path.length - 1; i++) {
-          const key = path[i];
-          if (!current[key]) {
-            current[key] = {};
-          }
-          current = current[key];
-        }
-        current[path[path.length - 1]] = message;
-      });
-
-      setErrorInput({ ...errorInput, user: errorObject });
-      setLoading(false);
-      return
-    }
-    // vaciamos los errores
-    setErrorInput({})
-
+    // Guardamos con una funcion del userContext
+    const { success, error, message } = saveUserCache(user)
     try {
-      // Intentamos guardar la informacion en cache
-      const userString = JSON.stringify(user)
-      localStorage.setItem("user", userString)
+      // Control de errores
+      if (!success) {
+        throw new Error(error);
+      }
+      // vaciamos los errores si no hubo conflicto
+      setErrorInput({});
 
-      setSuccess(true); // Mostrar mensaje de éxito
-      setTimeout(() => {
-        setSuccess(false); // Borrar mensaje de éxito después de 5 segundos
-      }, 5000);
-    } catch (error) {
-      console.error("Error al guardar la información:", error);
+    } catch (err) {
+      console.error(err)
+      // Hubo un problema de validación de inputs req
+      if (error?.issues) {
+        const errors = convertZodErrors(error)
+        setErrorInput({ ...errorInput, user: errors });
+      }
     } finally {
+      notificationSaveUser(message, success)
       setLoading(false);
     }
   };
@@ -1025,14 +1027,17 @@ export function FormUser() {
           </div>
         </div>
       </CardContent>
-      <CardFooter className="flex justify-end">
-        {success && (
-          <div className="flex text-green-500">
-            <CheckIco className="size-6"/>
-            <p className="text-sm">¡La información se ha guardado correctamente!</p>
-          </div>
-        )}
-        <Button className={`border bg-gradient-to-r hover:from-blue-800 hover:to-red-700 from-sky-800 to-indigo-600 bg-vnzla rounded-full ${loading && 'cursor-wait'}`} onClick={saveInfoUser}>{loading ? 'Guardando...' : 'Guardar Informacion'} <SaveIco className="fill-amber-400 size-5"/></Button>
+      <CardFooter className="flex-nowrap justify-between">
+        <div>
+          {success.visibility && (
+            <div className={`flex items-center gap-2 ${success.status ? "text-green-500" : "text-red-500"}`}>
+              {success.status ? <CheckIco className="size-6" /> : <XCircleIcon className="size-6" />}
+              <p className="text-sm">{success.message}</p>
+            </div>
+          )}
+        </div>
+
+        <Button className={`border bg-gradient-to-r hover:from-blue-800 hover:to-red-700 from-sky-800 to-indigo-600 bg-vnzla rounded-full ${loading && 'cursor-wait'}`} onClick={saveInfoUser}>{loading ? 'Guardando...' : 'Guardar Informacion'} <SaveIco className="fill-amber-400 size-5" /></Button>
       </CardFooter>
     </Card>)
   );
@@ -1052,26 +1057,6 @@ function ChevronDownIcon(props) {
       strokeLinecap="round"
       strokeLinejoin="round">
       <path d="m6 9 6 6 6-6" />
-    </svg>)
-  );
-}
-
-
-function XIcon(props) {
-  return (
-    (<svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round">
-      <path d="M18 6 6 18" />
-      <path d="m6 6 12 12" />
     </svg>)
   );
 }

@@ -1,45 +1,55 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
+// Context
+import { UserContext } from '@/utils/contexts/UserContext';
+// Componentes
 import TemplateHarvard from '@/components/cv/components/TemplateHarvard';
-import { fetchCreateCV } from '@/components/cv/utils/fetchCreateCv';
 import { FormUser } from '@/components/component/form-user';
 import JobForm from '@/components/cv/components/JobForm';
+// Utilidades
+import { fetchCreateCV } from '@/components/cv/utils/fetchCreateCv';
 
 export default function Home() {
   // Datos del CV generado
   const [cv, setCv] = useState({});
-  // Datos usuario
-  const [user, setUser] = useState({})
 
+  // Datos usuario proveidos por el context
+  const { userData } = useContext(UserContext)
+
+  // Asignamos los valores del usuario
+  const [user, setUser] = useState(userData)
+
+  // Escucha activa de los datos del usuario
+  useEffect(() => {
+    if (userData) {
+      setUser(userData);
+    }
+  }, [userData]);
+
+  const [jobDescription, setJobDescription] = useState('')
   //Carga del curriculum
   const [loading, setLoading] = useState(false)
 
   // Manejo ed errores
   const [error, setError] = useState(false)
 
-  // Recuperacion de la informacion almacenada en las Cookies
-  useEffect(() => {
-    const userInfo = localStorage.getItem("user")
-
-    if (userInfo) {
-      try {
-
-        const parsedUserInfo = JSON.parse(userInfo)
-
-        setUser(parsedUserInfo)
-
-      }
-      catch (error) {
-        console.error("Error parsing user info from localStorage:", error);
-      }
-    }
-  }, []);
-
   // Peticion
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true)
     setError(false)
-    const response = await fetchCreateCV(user)
+
+    // handler object 
+    // Posible funcion para que se pueda mandar sin descripcion
+    // const objectReq = () => {
+    //   if (jobDescription.length > 0) {
+    //     return { ...user, jobDescription }
+    //   }
+      
+    //   return user
+    // }
+    
+    const objectReq = { ...user, jobDescription }
+    const response = await fetchCreateCV(objectReq)
 
     if (response) {
       if ('cv' in response) {
@@ -54,11 +64,11 @@ export default function Home() {
 
   // Descripcion del empleo
   const handleJobDescriptionChange = (e) => {
-    setUser({ ...user, jobDescription: e.target.value });
+    setJobDescription(e.target.value);
   };
+
   return (
     <div>
-
       <div className="container mx-auto my-4">
         <div className="grid grid-cols-2">
           <div className='w-full' style={{ maxWidth: "640px" }}>
@@ -71,7 +81,6 @@ export default function Home() {
             <p className="text-center text-red-600 font-medium">{error && error}</p>
           </div>
         </div>
-
       </div>
       <div className='my-4 flex flex-col'>
         {
