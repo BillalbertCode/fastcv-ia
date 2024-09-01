@@ -23,7 +23,11 @@ const months = [
 ];
 
 // Formateo de el string Si la fecha es la del dia de hoy.
-const dateScheme = z.string().min('Ingresa una fecha valida');
+const dateScheme = z.string({
+    required_error: "Please select a date and time",
+    invalid_type_error: "Please select a date and time",
+})
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "La fecha debe tener el formato AAAA-MM-DD");
 
 // Formatea la fecha recivida a: 'Atualmente' o Mes - Año
 const dateFormate = (dateScheme) => {
@@ -118,5 +122,5 @@ export const userInfoSchema = z.object({
 
 // Esquema que usa el server para validar los datos 
 export const userServerSchema = userInfoSchema.extend({
-    jobDescription: z.string().min(32,{message: 'Mínimo 32 caracteres'}).max(1100,{message: requeridoMsgMax(1100)}).optional()
+    jobDescription: z.string().min(32, { message: 'Mínimo 32 caracteres' }).max(1100, { message: requeridoMsgMax(1100) }).optional()
 })

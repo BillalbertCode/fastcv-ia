@@ -174,6 +174,7 @@ export function FormUser() {
       // Hubo un problema de validación de inputs req
       if (error?.issues) {
         const errors = error.format()
+        console.log(errors)
         setErrorInput(addErrorGroup(errorInput, "user", errors));
       }
     } finally {
