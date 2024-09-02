@@ -29,7 +29,7 @@ const FormUser = () => {
     return (
         <div className="m-auto">
             <FormSkills
-                onClick={handleAdd}
+                onClick={(data) => handleAdd("technicalSkills", data)}
             />
         </div>
     )
