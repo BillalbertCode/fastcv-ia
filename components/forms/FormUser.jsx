@@ -3,8 +3,14 @@
 import { useState, useEffect, useContext } from "react"
 // Contexts
 import { UserContext } from "@/utils/contexts/UserContext"
-import FormSkills from "./FormSkills"
+// Utils
 import { addInputGroup } from "@/utils/helper/input-handlers/handleInputGroup"
+// Componentes de Formulario
+import FormEducation from "./FormEducation"
+import FormExperience from "./FormExperience"
+import FormProjects from "./FormProjects"
+import FormSkills from "./FormSkills"
+import FormLeadership from "./FormLeadership"
 
 const FormUser = () => {
     // Context para manejar la data del usuario
@@ -28,9 +34,11 @@ const FormUser = () => {
 
     return (
         <div className="m-auto">
-            <FormSkills
-                onClick={(data) => handleAdd("technicalSkills", data)}
-            />
+            <FormSkills onClick={(data) => handleAdd("technicalSkills", data)} />
+            <FormEducation onClick={(data) => handleAdd("education", data)} />
+            <FormExperience onClick={(data) => handleAdd("experience", data)} />
+            <FormProjects onClick={(data) => handleAdd("projects", data)}/>
+            <FormLeadership onClick={(data) => handleAdd("leadershipAndActivities", data)}/>
         </div>
     )
 }

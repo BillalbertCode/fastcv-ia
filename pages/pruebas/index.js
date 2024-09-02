@@ -18,7 +18,6 @@ export default function Home() {
         <div>
             <h1 className="text-center">Pruebas</h1>
             <FormUser />
-            <ViewInfo data={user.technicalSkills} />
         </div>
     )
 }
