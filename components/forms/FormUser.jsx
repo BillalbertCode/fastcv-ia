@@ -11,6 +11,7 @@ import FormExperience from "./FormExperience"
 import FormProjects from "./FormProjects"
 import FormSkills from "./FormSkills"
 import FormLeadership from "./FormLeadership"
+import FormPersonal from "./FormPesonal"
 
 const FormUser = () => {
     // Context para manejar la data del usuario
@@ -34,6 +35,7 @@ const FormUser = () => {
 
     return (
         <div className="m-auto">
+            <FormPersonal onClick={(data) => handleAdd("personalInfo", data)}/>
             <FormSkills onClick={(data) => handleAdd("technicalSkills", data)} />
             <FormEducation onClick={(data) => handleAdd("education", data)} />
             <FormExperience onClick={(data) => handleAdd("experience", data)} />

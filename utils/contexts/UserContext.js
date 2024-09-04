@@ -15,7 +15,7 @@ export const UserProvider = ({ children }) => {
             lastName: '',
             countryCode: '',
             phoneNumber: '',
-            phone: '',
+            countryCode: '',
             email: '',
             description: ''
         },

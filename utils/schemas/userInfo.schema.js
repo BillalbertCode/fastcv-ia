@@ -60,12 +60,11 @@ const dateFormate = (dateScheme) => {
 const parsedDate = dateFormate(dateScheme);
 
 // PersonalInfo Schema
-
-const personalInfoSchema = z.object({
+export const personalInfoSchema = z.object({
     name: z.string().min(1, { message: requeridoMsg }).max(50, { message: requeridoMsgMax(50) }),
     lastName: z.string().min(1, { message: requeridoMsg }).max(50, { message: requeridoMsgMax(50) }),
     phoneNumber: z.string().min(1, { message: requeridoMsg }).regex(/^(\+?\d{1,3})?[-. ]?(\d{3,12})$/, { message: 'Ingresa un numero de telefono valido' }),
-    phone: z.string().min(1, { message: requeridoMsg }),
+    countryCode: z.string().min(1, { message: requeridoMsg }),
     email: z.string().min(1, { message: requeridoMsg }).email({ message: 'Ingresa un email valido' }),
     description: z.string().min(10, { message: 'Mínimo 10 caracteres' }).max(1100, { message: requeridoMsgMax(1100) })
 })

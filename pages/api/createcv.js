@@ -130,7 +130,7 @@ export default async function handler(req, res) {
         name: personalInfo.name,
         lastName: personalInfo.lastName,
         email: personalInfo.email,
-        phone: personalInfo.phone
+        phone: personalInfo.countryCode + personalInfo.phoneNumber
       },
       education,
       experience,

@@ -41,7 +41,8 @@ Api que usa la inteligencia artificial geminis para resumir y adaptar tu cv a un
       "name": "string",
       "lastName": "string",
       "email": "string",
-      "phone": "string",
+      "phoneNumber": "string",
+      "countryCode": "string",
       "description": "string" 
     },
     "technicalSkills": [
@@ -124,7 +125,7 @@ Detalles relevantes:
       "name": "string",
       "lastName": "string" ,
       "email": "string",
-      "phone": "number"
+      "phone": "string"
     },
     "education": [
       {
