@@ -11,9 +11,7 @@ const InputGroup = ({ title, children }) => {
             </CollapsibleTrigger>
             <CollapsibleContent>
                 <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
                         {children}
-                    </div>
                 </div>
             </CollapsibleContent>
         </Collapsible>

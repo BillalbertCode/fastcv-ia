@@ -36,46 +36,51 @@ const FormPersonal = ({ onClick }) => {
 
     return (
         <InputGroup title={"Información Personal"}>
-            <InputForm
-                name='name'
-                label='Nombre'
-                value={formData.name}
-                _errors={errors.name?._errors}
-                onChange={handleInput}
-                maxLenght={50}
-            />
-            <InputForm
-                name='lastName'
-                label='Apellido'
-                value={formData.lastName}
-                _errors={errors.lastName?._errors}
-                onChange={handleInput}
-                maxLenght={50}
-            />
-            <InputForm
-                name='email'
-                label='Email'
-                value={formData.email}
-                _errors={errors.email?._errors}
-                onChange={handleInput}
-                maxLenght={50}
-            />
-            <div className="flex">
-                <SelectForm
-                    name='countryCode'
-                    label='Seleccione el País'
+            <div className="grid grid-cols-2 gap-4">
+                <InputForm
+                    name='name'
+                    label='Nombre'
+                    value={formData.name}
+                    _errors={errors.name?._errors}
                     onChange={handleInput}
-                    value={formData.countryCode}
-                    _errors={errors.countryCode?._errors}
-                    options={countryOptions.items}
+                    maxLenght={50}
                 />
                 <InputForm
-                    name='phoneNumber'
-                    label='Número de Teléfono'
-                    value={formData.phoneNumber}
-                    _errors={errors.phoneNumber?._errors}
+                    name='lastName'
+                    label='Apellido'
+                    value={formData.lastName}
+                    _errors={errors.lastName?._errors}
                     onChange={handleInput}
+                    maxLenght={50}
                 />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+
+                <InputForm
+                    name='email'
+                    label='Email'
+                    value={formData.email}
+                    _errors={errors.email?._errors}
+                    onChange={handleInput}
+                    maxLenght={50}
+                />
+                <div className="flex gap-2">
+                    <SelectForm
+                        name='countryCode'
+                        label='Seleccione el País'
+                        onChange={handleInput}
+                        value={formData.countryCode}
+                        _errors={errors.countryCode?._errors}
+                        options={countryOptions.items}
+                    />
+                    <InputForm
+                        name='phoneNumber'
+                        label='Número de Teléfono'
+                        value={formData.phoneNumber}
+                        _errors={errors.phoneNumber?._errors}
+                        onChange={handleInput}
+                    />
+                </div>
             </div>
             <TextareaForm
                 name='description'

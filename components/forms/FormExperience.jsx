@@ -27,59 +27,67 @@ const FormExperience = ({ onClick }) => {
 
     return (
         <InputGroup title={"Experiencia"}>
-            <InputForm
-                name='organization'
-                label='Empresa o Organización'
-                maxLenght={50}
-                value={formData.organization}
-                _errors={errors.organization?._errors}
-                onChange={handleInput}
-                placeholder={"Nombre de la Organizacion/Empresa"}
-            />
-            <InputForm
-                name='position'
-                label='Posición'
-                maxLenght={50}
-                value={formData.position}
-                _errors={errors.position?._errors}
-                onChange={handleInput}
-                placeholder={"Título del empleo"}
-            />
-            <DateForm
-                name='startDate'
-                label='Fecha de Inicio'
-                value={formData.startDate}
-                _errors={errors.startDate?._errors}
-                onChange={handleInput}
-                min={"1900-01-01"}
-                max={dateToday()}
-            />
-            <DateForm
-                name='endDate'
-                label='Fecha de Fin'
-                value={formData.endDate}
-                _errors={errors.endDate?._errors}
-                onChange={handleInput}
-                min={"1900-01-01"}
-                max={dateToday()}
-            />
-            <InputForm
-                name='location'
-                label='Lugar'
-                maxLenght={50}
-                value={formData.location}
-                _errors={errors.location?._errors}
-                onChange={handleInput}
-            />
-            <TextareaForm
-                name='description'
-                label='Descripción'
-                value={formData.description}
-                _errors={errors.description?._errors}
-                onChange={handleInput}
-                rows={4}
-                placeholder={"Descripción detallada de tu utilidad en la compañia"}
-            />
+            <div className="grid grid-cols-2 gap-4">
+
+                <InputForm
+                    name='organization'
+                    label='Empresa o Organización'
+                    maxLenght={50}
+                    value={formData.organization}
+                    _errors={errors.organization?._errors}
+                    onChange={handleInput}
+                    placeholder={"Nombre de la Organizacion/Empresa"}
+                />
+                <InputForm
+                    name='position'
+                    label='Posición'
+                    maxLenght={50}
+                    value={formData.position}
+                    _errors={errors.position?._errors}
+                    onChange={handleInput}
+                    placeholder={"Título del empleo"}
+                />
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+
+                <DateForm
+                    name='startDate'
+                    label='Fecha de Inicio'
+                    value={formData.startDate}
+                    _errors={errors.startDate?._errors}
+                    onChange={handleInput}
+                    min={"1900-01-01"}
+                    max={dateToday()}
+                />
+                <DateForm
+                    name='endDate'
+                    label='Fecha de Fin'
+                    value={formData.endDate}
+                    _errors={errors.endDate?._errors}
+                    onChange={handleInput}
+                    min={"1900-01-01"}
+                    max={dateToday()}
+                />
+                <InputForm
+                    name='location'
+                    label='Lugar'
+                    maxLenght={50}
+                    value={formData.location}
+                    _errors={errors.location?._errors}
+                    onChange={handleInput}
+                />
+            </div>
+            <div className="grid grid-cols-1">
+                <TextareaForm
+                    name='description'
+                    label='Descripción'
+                    value={formData.description}
+                    _errors={errors.description?._errors}
+                    onChange={handleInput}
+                    rows={4}
+                    placeholder={"Descripción detallada de tu utilidad en la compañia"}
+                />
+            </div>
             <Button onClick={add} className="border hover:bg-slate-50 hover:text-black" >Añadir Experiencia</Button>
         </InputGroup>
     )

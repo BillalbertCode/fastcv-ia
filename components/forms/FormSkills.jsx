@@ -16,13 +16,15 @@ const FormSkills = ({ onClick }) => {
 
     return (
         <InputGroup title={"Habilidades"}>
-            <InputForm
-                name='name'
-                label='Habilidad'
-                value={formData.name}
-                _errors={errors.name?._errors}
-                onChange={handleInput}
-            />
+            <div className="flex">
+                <InputForm
+                    name='name'
+                    label='Habilidad'
+                    value={formData.name}
+                    _errors={errors.name?._errors}
+                    onChange={handleInput}
+                />
+            </div>
             <Button onClick={add} className="border hover:bg-slate-50 hover:text-black" >Añadir Habilidad</Button>
         </InputGroup>
     )
