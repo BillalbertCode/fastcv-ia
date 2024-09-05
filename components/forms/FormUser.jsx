@@ -62,7 +62,7 @@ const FormUser = () => {
     }
 
     const handleAdd = (objectKey, data) => {
-        setUser({...user, [objectKey]: data})
+        setUser({ ...user, [objectKey]: data })
     }
     // Guardar informacion del usuario
     const saveInfoUser = () => {
@@ -89,6 +89,10 @@ const FormUser = () => {
         }
     }
 
+    const cancelInfoUser = () => {
+        setUser(userData)
+    }
+
     return (
         <Card className="w-full max-w-3x1">
             <CardHeader>
@@ -112,10 +116,15 @@ const FormUser = () => {
                         </div>
                     )}
                 </div>
-                <Button onClick={saveInfoUser} className={`border bg-vnzla rounded-full ${loading && 'cursor-wait'}`}>
-                    {loading ? 'Guardando...' : 'Guardar Informacion'}
-                    <SaveIco className="fill-amber-400 size-5" />
-                </Button>
+                <div className="flex flex-col gap-2">
+                    <Button onClick={saveInfoUser} className={`border bg-vnzla rounded-full ${loading && 'cursor-wait'}`}>
+                        {loading ? 'Guardando...' : 'Guardar Informacion'}
+                        <SaveIco className="fill-amber-400 size-5" />
+                    </Button>
+                    <div className="flex justify-center">
+                        <button onClick={cancelInfoUser} className="transition hover:text-red-400 font-medium text-sm">Cancelar</button>
+                    </div>
+                </div>
             </CardFooter>
         </Card>
     )
