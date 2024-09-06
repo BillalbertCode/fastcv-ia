@@ -37,7 +37,7 @@ export const resetInputGroup = (handlerInputs, arrayName) => {
 export const deleteInputGroup = (handlerInput, arrayName, index) => {
     const objectData = {
         ...handlerInput,
-        [arrayName]: user[arrayName].filter((item, i) => i !== index)
+        [arrayName]: [...handlerInput[arrayName].filter((item, i) => i !== index)]
     }
     return objectData
 }

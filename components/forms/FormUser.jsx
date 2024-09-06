@@ -4,7 +4,7 @@ import { useState, useEffect, useContext } from "react"
 // Contexts
 import { UserContext } from "@/utils/contexts/UserContext"
 // Utils
-import { addInputGroup } from "@/utils/helper/input-handlers/handleInputGroup"
+import { addInputGroup, deleteInputGroup } from "@/utils/helper/input-handlers/handleInputGroup"
 // Componentes de Formulario
 import FormEducation from "./FormEducation"
 import FormExperience from "./FormExperience"
@@ -15,6 +15,7 @@ import FormPersonal from "./FormPesonal"
 // Componentes UI
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card"
 import { Button } from "../ui/button"
+import ViewInfo from "../component/viewInfo"
 // Icons
 import { CheckIco, SaveIco } from "../resources/Icons"
 import { XCircleIcon } from "lucide-react"
@@ -93,6 +94,10 @@ const FormUser = () => {
         setUser(userData)
     }
 
+    const onDelete = (arrayName, index) => {
+        setUser(deleteInputGroup(user, arrayName, index))
+    }
+
     return (
         <Card className="w-full max-w-3x1">
             <CardHeader>
@@ -101,11 +106,41 @@ const FormUser = () => {
             </CardHeader>
             <CardContent className="grid gap-6">
                 <FormPersonal onClick={(data) => handleAdd("personalInfo", data)} />
-                <FormSkills onClick={(data) => handleAddArray("technicalSkills", data)} />
-                <FormEducation onClick={(data) => handleAddArray("education", data)} />
-                <FormExperience onClick={(data) => handleAddArray("experience", data)} />
-                <FormProjects onClick={(data) => handleAddArray("projects", data)} />
-                <FormLeadership onClick={(data) => handleAddArray("leadershipAndActivities", data)} />
+                <div >
+                    <FormSkills onClick={(data) => handleAddArray("technicalSkills", data)} />
+                    <ViewInfo
+                        onDelete={(index) => onDelete("technicalSkills", index)}
+                        data={user["technicalSkills"]}
+                    />
+                </div>
+                <div>
+                    <FormEducation onClick={(data) => handleAddArray("education", data)} />
+                    <ViewInfo
+                        onDelete={(index) => onDelete("education", index)}
+                        data={user["education"]}
+                    />
+                </div>
+                <div>
+                    <FormExperience onClick={(data) => handleAddArray("experience", data)} />
+                    <ViewInfo
+                        onDelete={(index) => onDelete("experience", index)}
+                        data={user["experience"]}
+                    />
+                </div>
+                <div>
+                    <FormProjects onClick={(data) => handleAddArray("projects", data)} />
+                    <ViewInfo
+                        onDelete={(index) => onDelete("projects", index)}
+                        data={user["projects"]}
+                    />
+                </div>
+                <div>
+                    <FormLeadership onClick={(data) => handleAddArray("leadershipAndActivities", data)} />
+                    <ViewInfo
+                        onDelete={(index) => onDelete("projects", index)}
+                        data={user["projects"]}
+                    />
+                </div>
             </CardContent>
             <CardFooter className="flex-nowrap justify-between">
                 <div>
