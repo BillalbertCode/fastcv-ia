@@ -97,7 +97,7 @@ export default async function handler(req, res) {
 
   // Control de datos fallidos 
   if (!success) {
-    return res.status(400).json({ error: { message: 'Invalid request', error: error.issues } })
+    return res.status(400).json({ error: { message: 'Invalid request', error: error.format() } })
   }
 
   // extraccion de datos de usuario 

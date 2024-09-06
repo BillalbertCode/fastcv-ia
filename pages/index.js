@@ -38,7 +38,6 @@ export default function Home() {
     e.preventDefault();
     setLoading(true)
     setError(false)
-
     // handler object 
     // Posible funcion para que se pueda mandar sin descripcion
     // const objectReq = () => {
@@ -57,10 +56,12 @@ export default function Home() {
         setCv(response.cv)
       } else {
         console.error(response.error)
-        setError(response.error)
+        setError(response)
       }
       setLoading(false)
     }
+    console.log(error)
+
   }
 
   // Descripcion del empleo
@@ -76,10 +77,10 @@ export default function Home() {
             <FormUser/>
           </div>
           <div className='flex flex-col justify-center'>
-            <JobForm onChange={handleJobDescriptionChange} feedbackMessage={cv?.feedbackMessage} compatibilityWithWork={cv?.compatibilityWithWork} />
+            <JobForm _errors={error && error.error?.jobDescription?._errors} onChange={handleJobDescriptionChange} feedbackMessage={cv?.feedbackMessage} compatibilityWithWork={cv?.compatibilityWithWork} />
             <button disabled={Object.keys(user).length === 0} onClick={handleSubmit} className="btn bg-green-500 text-white mx-auto py-2 px-4 rounded">Generar Cv </button>
             <p className="text-center font-medium">{loading ? "Generando CV por favor espere..." : " "}</p>
-            <p className="text-center text-red-600 font-medium">{error && error}</p>
+            <p className="text-center text-red-600 font-medium">{error && error?.message}</p>
           </div>
         </div>
       </div>
