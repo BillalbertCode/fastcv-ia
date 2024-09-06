@@ -1,8 +1,8 @@
 // Layout
-import InputGroup from "./layout/InputGroup";
+import InputGroup from "../layout/InputGroup";
 // Components
-import { InputForm, SelectForm, TextareaForm } from "../component/InputForm";
-import { Button } from "../ui/button";
+import { InputForm, SelectForm, TextareaForm } from "../../component/InputForm";
+import { Button } from "../../ui/button";
 // Esquemas
 import { personalInfoSchema } from "@/utils/schemas/userInfo.schema";
 // Hooks

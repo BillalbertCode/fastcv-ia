@@ -6,12 +6,12 @@ import { UserContext } from "@/utils/contexts/UserContext"
 // Utils
 import { addInputGroup, deleteInputGroup } from "@/utils/helper/input-handlers/handleInputGroup"
 // Componentes de Formulario
-import FormEducation from "./FormEducation"
-import FormExperience from "./FormExperience"
-import FormProjects from "./FormProjects"
-import FormSkills from "./FormSkills"
-import FormLeadership from "./FormLeadership"
-import FormPersonal from "./FormPesonal"
+import FormEducation from "./miniForms/FormEducation"
+import FormExperience from "./miniForms/FormExperience"
+import FormProjects from "./miniForms/FormProjects"
+import FormSkills from "./miniForms/FormSkills"
+import FormLeadership from "./miniForms/FormLeadership"
+import FormPersonal from "./miniForms/FormPesonal"
 // Componentes UI
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card"
 import { Button } from "../ui/button"
@@ -106,35 +106,35 @@ const FormUser = () => {
             </CardHeader>
             <CardContent className="grid gap-6">
                 <FormPersonal onClick={(data) => handleAdd("personalInfo", data)} />
-                <div >
+                <div className="flex flex-col gap-2">
                     <FormSkills onClick={(data) => handleAddArray("technicalSkills", data)} />
                     <ViewInfo
                         onDelete={(index) => onDelete("technicalSkills", index)}
                         data={user["technicalSkills"]}
                     />
                 </div>
-                <div>
+                <div className="flex flex-col gap-2">
                     <FormEducation onClick={(data) => handleAddArray("education", data)} />
                     <ViewInfo
                         onDelete={(index) => onDelete("education", index)}
                         data={user["education"]}
                     />
                 </div>
-                <div>
+                <div className="flex flex-col gap-2">
                     <FormExperience onClick={(data) => handleAddArray("experience", data)} />
                     <ViewInfo
                         onDelete={(index) => onDelete("experience", index)}
                         data={user["experience"]}
                     />
                 </div>
-                <div>
+                <div className="flex flex-col gap-2">
                     <FormProjects onClick={(data) => handleAddArray("projects", data)} />
                     <ViewInfo
                         onDelete={(index) => onDelete("projects", index)}
                         data={user["projects"]}
                     />
                 </div>
-                <div>
+                <div className="flex flex-col gap-2">
                     <FormLeadership onClick={(data) => handleAddArray("leadershipAndActivities", data)} />
                     <ViewInfo
                         onDelete={(index) => onDelete("projects", index)}

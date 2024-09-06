@@ -3,10 +3,10 @@ import { ChevronDownIcon } from "lucide-react"
 
 const ViewInfo = ({ data, onDelete }) => {
     return (
-        <div className="transition flex gap-1">
+        <div className="transition flex flex-wrap gap-1">
             {data.map((property, index) => (
-                <Collapsible key={index} className="bg-slate-800 p-2 space-x-2 rounded ">
-                    <CollapsibleTrigger className="flex w-full items-center justify-between">
+                <Collapsible key={index} className="flex flex-col bg-slate-800 p-2 space-x-2 rounded ">
+                    <CollapsibleTrigger className="flex items-center justify-between">
                         <div className="font-medium">{Object.values(property)[0]}<span className="text-sm font-normal ml-1">{Object.values(property)[1]}</span></div>
                         <ChevronDownIcon className="h-5 w-5 transition-transform duration-300 [&[data-state=open]]:rotate-180" />
                     </CollapsibleTrigger>

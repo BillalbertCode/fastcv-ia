@@ -3,10 +3,11 @@ import { useState, useEffect, useContext } from 'react';
 import { UserContext } from '@/utils/contexts/UserContext';
 // Componentes
 import TemplateHarvard from '@/components/cv/components/TemplateHarvard';
-import { FormUser } from '@/components/component/form-user';
+
 import JobForm from '@/components/cv/components/JobForm';
 // Utilidades
 import { fetchCreateCV } from '@/components/cv/utils/fetchCreateCv';
+import FormUser from '@/components/forms/FormUser';
 
 export default function Home() {
   // Datos del CV generado
@@ -72,7 +73,7 @@ export default function Home() {
       <div className="container mx-auto my-4">
         <div className="grid grid-cols-2">
           <div className='w-full' style={{ maxWidth: "640px" }}>
-            <FormUser />
+            <FormUser/>
           </div>
           <div className='flex flex-col justify-center'>
             <JobForm onChange={handleJobDescriptionChange} feedbackMessage={cv?.feedbackMessage} compatibilityWithWork={cv?.compatibilityWithWork} />

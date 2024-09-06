@@ -1,54 +1,55 @@
 // Layout
-import InputGroup from "./layout/InputGroup";
+import InputGroup from "../layout/InputGroup"
 // Components
-import { DateForm, InputForm, TextareaForm } from "../component/InputForm";
-import { Button } from "../ui/button";
-// Esquemas
-import { leadershipSchema } from "@/utils/schemas/userInfo.schema";
-// Hooks
-import { useForm } from "@/utils/hooks/useForm";
+import { DateForm, InputForm, TextareaForm } from "@/components/component/InputForm"
+import { Button } from "../../ui/button";
+//  Esquemas
+import { experienceSchema } from "@/utils/schemas/userInfo.schema"
+//  Hooks
+import { useForm } from "@/utils/hooks/useForm"
 // Utilidades
-import { dateToday } from "@/utils/helper/time-handlers/today";
+import { dateToday } from "@/utils/helper/time-handlers/today"
 
+const FormExperience = ({ onClick }) => {
 
-const FormLeadership = ({ onClick }) => {
-
-    // Estado inicial del formulario
+    // Estado Inicial del formulario
     const initialState = {
         organization: '',
         location: '',
-        role: '',
+        position: '',
         startDate: '',
         endDate: '',
-        achievements: ''
+        description: ''
     }
 
     // Hook para el control del formulario
-    const { errors, formData, handleInput, add } = useForm(leadershipSchema, initialState, onClick)
+    const { errors, formData, handleInput, add } = useForm(experienceSchema, initialState, onClick)
 
     return (
-        <InputGroup title={"Liderazgo y Actividades"}>
+        <InputGroup title={"Experiencia"}>
             <div className="grid grid-cols-2 gap-4">
+
                 <InputForm
                     name='organization'
-                    label='Organización'
+                    label='Empresa o Organización'
+                    maxLenght={50}
                     value={formData.organization}
                     _errors={errors.organization?._errors}
                     onChange={handleInput}
-                    maxLenght={50}
+                    placeholder={"Nombre de la Organizacion/Empresa"}
                 />
                 <InputForm
-                    name='role'
-                    label='Rol'
-                    value={formData.role}
-                    _errors={errors.role?._errors}
-                    onChange={handleInput}
+                    name='position'
+                    label='Posición'
                     maxLenght={50}
-                    placeholder={"Ingresa tu Rol/Posición"}
-                    title={"Cual fue tu rol/posición, que hiciste?"}
+                    value={formData.position}
+                    _errors={errors.position?._errors}
+                    onChange={handleInput}
+                    placeholder={"Título del empleo"}
                 />
             </div>
             <div className="grid grid-cols-3 gap-2">
+
                 <DateForm
                     name='startDate'
                     label='Fecha de Inicio'
@@ -60,7 +61,7 @@ const FormLeadership = ({ onClick }) => {
                 />
                 <DateForm
                     name='endDate'
-                    label='Fecha de Finalización'
+                    label='Fecha de Fin'
                     value={formData.endDate}
                     _errors={errors.endDate?._errors}
                     onChange={handleInput}
@@ -70,10 +71,10 @@ const FormLeadership = ({ onClick }) => {
                 <InputForm
                     name='location'
                     label='Lugar'
+                    maxLenght={50}
                     value={formData.location}
                     _errors={errors.location?._errors}
                     onChange={handleInput}
-                    maxLenght={50}
                 />
             </div>
             <div className="grid grid-cols-1">
@@ -83,12 +84,13 @@ const FormLeadership = ({ onClick }) => {
                     value={formData.description}
                     _errors={errors.description?._errors}
                     onChange={handleInput}
-                    placeholder={"Describe extensivamente como fue tu participación en este evento o que logros obtuviste"}
+                    rows={4}
+                    placeholder={"Descripción detallada de tu utilidad en la compañia"}
                 />
             </div>
-            <Button onClick={add} className="border hover:bg-slate-50 hover:text-black" >Añadir Liderazgo</Button>
+            <Button onClick={add} className="border hover:bg-slate-50 hover:text-black" >Añadir Experiencia</Button>
         </InputGroup>
     )
 }
 
-export default FormLeadership;
+export default FormExperience
