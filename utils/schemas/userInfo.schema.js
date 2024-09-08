@@ -23,7 +23,11 @@ const months = [
 ];
 
 // Formateo de el string Si la fecha es la del dia de hoy.
-const dateScheme = z.string().min('Ingresa una fecha valida');
+const dateScheme = z.string({
+    required_error: "Please select a date and time",
+    invalid_type_error: "Please select a date and time",
+})
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "La fecha debe tener el formato AAAA-MM-DD");
 
 // Formatea la fecha recivida a: 'Atualmente' o Mes - Año
 const dateFormate = (dateScheme) => {
@@ -56,12 +60,11 @@ const dateFormate = (dateScheme) => {
 const parsedDate = dateFormate(dateScheme);
 
 // PersonalInfo Schema
-
-const personalInfoSchema = z.object({
+export const personalInfoSchema = z.object({
     name: z.string().min(1, { message: requeridoMsg }).max(50, { message: requeridoMsgMax(50) }),
     lastName: z.string().min(1, { message: requeridoMsg }).max(50, { message: requeridoMsgMax(50) }),
     phoneNumber: z.string().min(1, { message: requeridoMsg }).regex(/^(\+?\d{1,3})?[-. ]?(\d{3,12})$/, { message: 'Ingresa un numero de telefono valido' }),
-    phone: z.string().min(1, { message: requeridoMsg }),
+    countryCode: z.string().min(1, { message: requeridoMsg }),
     email: z.string().min(1, { message: requeridoMsg }).email({ message: 'Ingresa un email valido' }),
     description: z.string().min(10, { message: 'Mínimo 10 caracteres' }).max(1100, { message: requeridoMsgMax(1100) })
 })
@@ -118,5 +121,5 @@ export const userInfoSchema = z.object({
 
 // Esquema que usa el server para validar los datos 
 export const userServerSchema = userInfoSchema.extend({
-    jobDescription: z.string().min(32,{message: 'Mínimo 32 caracteres'}).max(1100,{message: requeridoMsgMax(1100)}).optional()
+    jobDescription: z.string().min(32, { message: 'Mínimo 32 caracteres' }).max(1100, { message: requeridoMsgMax(1100) }).optional()
 })

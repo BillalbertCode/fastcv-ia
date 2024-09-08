@@ -3,10 +3,11 @@ import { useState, useEffect, useContext } from 'react';
 import { UserContext } from '@/utils/contexts/UserContext';
 // Componentes
 import TemplateHarvard from '@/components/cv/components/TemplateHarvard';
-import { FormUser } from '@/components/component/form-user';
+
 import JobForm from '@/components/cv/components/JobForm';
 // Utilidades
 import { fetchCreateCV } from '@/components/cv/utils/fetchCreateCv';
+import FormUser from '@/components/forms/FormUser';
 
 export default function Home() {
   // Datos del CV generado
@@ -37,7 +38,6 @@ export default function Home() {
     e.preventDefault();
     setLoading(true)
     setError(false)
-
     // handler object 
     // Posible funcion para que se pueda mandar sin descripcion
     // const objectReq = () => {
@@ -56,10 +56,12 @@ export default function Home() {
         setCv(response.cv)
       } else {
         console.error(response.error)
-        setError(response.error)
+        setError(response)
       }
       setLoading(false)
     }
+    console.log(error)
+
   }
 
   // Descripcion del empleo
@@ -72,13 +74,13 @@ export default function Home() {
       <div className="container mx-auto my-4">
         <div className="grid grid-cols-2">
           <div className='w-full' style={{ maxWidth: "640px" }}>
-            <FormUser />
+            <FormUser/>
           </div>
           <div className='flex flex-col justify-center'>
-            <JobForm onChange={handleJobDescriptionChange} feedbackMessage={cv?.feedbackMessage} compatibilityWithWork={cv?.compatibilityWithWork} />
+            <JobForm _errors={error && error.error?.jobDescription?._errors} onChange={handleJobDescriptionChange} feedbackMessage={cv?.feedbackMessage} compatibilityWithWork={cv?.compatibilityWithWork} />
             <button disabled={Object.keys(user).length === 0} onClick={handleSubmit} className="btn bg-green-500 text-white mx-auto py-2 px-4 rounded">Generar Cv </button>
             <p className="text-center font-medium">{loading ? "Generando CV por favor espere..." : " "}</p>
-            <p className="text-center text-red-600 font-medium">{error && error}</p>
+            <p className="text-center text-red-600 font-medium">{error && error?.message}</p>
           </div>
         </div>
       </div>

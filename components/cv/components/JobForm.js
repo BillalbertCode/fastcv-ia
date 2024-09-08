@@ -6,26 +6,21 @@
  * 
  * @param {string} feedbackMessage 
  * @param {number} compatibilityWithWork - compatibilidad con el trabajo 
+ * @param {function} onChange - handler input
  * @returns 
  */
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+import { TextareaForm } from "@/components/component/InputForm"
 
-const JobForm = ({feedbackMessage, compatibilityWithWork, onChange}) => {
+const JobForm = ({ feedbackMessage, compatibilityWithWork, onChange, _errors }) => {
     return (
         <div className="bg-background p-6 shadow-lg">
             <div className="flex flex-col gap-4">
-                <div className="flex items-center justify-between">
-                    <Label htmlFor="job-description" className="text-lg font-medium">
-                        Descripción del Empleo (opcional)
-                    </Label>
-                    <InfoIcon className="w-5 h-5 text-muted-foreground" />
-                </div>
-                <Textarea
-                    id="job-description"
+                <TextareaForm
+                    label={"Descripción del Empleo (opcional)"}
                     onChange={onChange}
-                    placeholder="Ingresa una descripción detallada del empleo..."
-                    className="p-4 min-h-[200px] rounded-md border border-input bg-background focus:border-primary focus:ring-1 focus:ring-primary"
+                    placeholder={"Ingresa una descripción detallada del empleo..."}
+                    rows={6}
+                    _errors={_errors}
                 />
                 <div className="flex items-center gap-2">
                     <div title="Compatibilidad con el Empleo" className="flex items-center gap-1 text-primary">

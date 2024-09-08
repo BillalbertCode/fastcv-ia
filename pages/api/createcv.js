@@ -97,7 +97,7 @@ export default async function handler(req, res) {
 
   // Control de datos fallidos 
   if (!success) {
-    return res.status(400).json({ error: { message: 'Invalid request', error: error.issues } })
+    return res.status(400).json({ error: { message: 'Invalid request', error: error.format() } })
   }
 
   // extraccion de datos de usuario 
@@ -130,7 +130,7 @@ export default async function handler(req, res) {
         name: personalInfo.name,
         lastName: personalInfo.lastName,
         email: personalInfo.email,
-        phone: personalInfo.phone
+        phone: personalInfo.countryCode + personalInfo.phoneNumber
       },
       education,
       experience,
