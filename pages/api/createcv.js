@@ -72,18 +72,15 @@ const getTechnicalSkills = (skills) => {
 }
 
 //  Prompt con las intrucciones de la creacion de la respuesta de la IA
+// toda la informacion no proporcionada la colocas como "undefined"
 const promptCV = data => `
-    Segun la informacion de esta persona, modifica de manera veridica la informacion de la persona para que se adapte a la descripcion del empleo
-    para crear un cv con las reglas de harvard de como crear un resume apropiado.
-    Detalles relevantes: todos los formatos de fechas lo colocas como mes y año, toda la informacion no proporcionada la colocas como "undefined"
-    - Descripcion del empleo ${data.jobDescription}
-    - Auto Descripción de la persona, maximo 300 caracteres: ${data.personalInfo.description}
-    - Estudios segun la persona: ${getEstudios(data.education)} maximo 3 estudios segun los mas compatibles con el empleo
-    - Experiencia segun la persona, descripcion de maximo 350 caracteres por empleo: ${getExperience(data.experience)}  maximo 3 experiencias segun los mas compatibles con el empleo
-    - Proyectos segun la persona, descripcion de maximo 350 caracteres por proyecto : ${getProjects(data.projects)}  maximo 2 proyectos segun los mas compatibles con el empleo.
-    - Liderazgo y Actividades segun la persona, descripcion de maximo 350 caracteres por Actividad: ${getleadershipAndActivities(data.leadershipAndActivities)} maximo 2 segun los mas compatibles con el empleo.
-    - Habilidades Tecnicas segun la persona: ${getTechnicalSkills(data.technicalSkills)}, analiza el resto de informacion del usuario para añadir nuevas habilidades, y dividelo en categorias 
-    Dale una puntuacion de que tan compatible es la persona con la descripcion del empleo del 1 al 100 , y un mensaje de feedback segun que deberia aprender o mejorar para el empleo que esta solicitando.
+    - Descripcion del empleo: ${data.jobDescription}
+    - Auto Descripción de la persona: ${data.personalInfo.description}
+    - Estudios segun la persona: ${getEstudios(data.education)}
+    - Experiencia segun la persona: ${getExperience(data.experience)} 
+    - Proyectos segun la persona: ${getProjects(data.projects)}
+    - Liderazgo y Actividades segun la persona: ${getleadershipAndActivities(data.leadershipAndActivities)}
+    - Habilidades Técnicas segun la persona: ${getTechnicalSkills(data.technicalSkills)}
     `;
 
 // API Response
@@ -102,6 +99,7 @@ export default async function handler(req, res) {
 
   // extraccion de datos de usuario 
   const { personalInfo } = data;
+
 
   try {
     // Peticion de respuesta IA
@@ -141,7 +139,9 @@ export default async function handler(req, res) {
       feedbackMessage
     }
     res.status(200).json({ cv: cv });
+
   } catch (error) {
+    console.error(error)
     res.status(500).json({ error: { message: 'Error al generar la respuesta de la IA', error: error } });
   }
 }
